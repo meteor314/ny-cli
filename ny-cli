@@ -1,23 +1,17 @@
 #!/bin/bash
-#query=$(printf '%s' "$*" | sed 's/ /\%20/g')
-#echo "$query"
-#curl -o torrent.ini https://nyaa.si/?f=0&c=0_0&q=$query&s=seeders&o=desc
-#magnet=$(cat torrent.ini | grep -E 'magnet\:\?'| sed 's/href\=/ /g'|awk '{print $2}'| sed 's/"/ /g'| head -n 10|sed 's/ //g')
-
-#echo "$magnet"
-
-
-
 #Version 
 version="1.0.1"
-old_ifs="${IFS}"
-cache_dir="${HOME}/.cache/nyaa-cli"
-dependencies=("curl", "cat", "sed", "awk", "rm", "pup", "patch", "mkdir", "mpv", "peerflix" )
 
-github_source="https://raw.githubusercontent.com/meteor314/my-cli/master/ny-cli"
+#Dependencies
+old_ifs="${IFS}"
+cache_dir="${HOME}/.cache/ny-cli"
+dependencies=("curl", "cat", "sed", "awk", "rm",  "patch", "mkdir", "mpv", "peerflix" )
+
+github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
+
+#Out put text color
 #Reset
 Color_Off='\033[0m'       # Text Reset
-
 # Regular Colors
 Black='\033[0;30m'        # Black
 Red='\033[0;31m'          # Red
@@ -45,6 +39,15 @@ print_blue() { # Print green text
 	echo -e "${Blue}" "${*}"
 }
 
+print_white() { # Print green text
+	echo -e "${white}" "${*}"
+}
+
+
+print_list_item() { # Print text in blue (${1}) and the default color (${2})
+	printf "${blue}%s${no_color} ${no_color}%s${no_color}\n" "[${1}]" "${2}"
+}
+
 
 ######################
 # Auxilary functions #
@@ -55,8 +58,7 @@ show_help() {
 		printf "%s\n" "${line}"
 	done <<-EOF
 	
-    ny-cli ${version} ( github.com/meteor314/ny-cli )
-	Bash script for  torrent via the terminal
+    ny-cli ${version} ( github.com/meteor314/ny-cli ). Bash script for  torrent via the terminal
 	Usage:
 	  ny-cli [Options]
 	Options:
@@ -68,6 +70,34 @@ show_help() {
 	EOF
 }
 
+
+
+
+check_dependencies() {
+	for dependency in "${dependencies[@]}"; do
+		if ! command -v "${dependency}" &> /dev/null; then
+			if ! pip3 show "${dependency}" &> /dev/null; then
+				print_red "Missing dependency: '${dependency}'"
+				exit_script=true
+			else
+				python_cmd_prefix=true
+			fi
+		fi
+	done
+
+	if [[ "${exit_script}" == "true" ]]; then
+		exit 1
+	fi
+}
+
+
+prompt() { 
+	# Print text in green (${1}) and blue (${2}) 
+	printf "${green}%s${no_color} ${blue}%s${no_color}" "${1}" "${2}"
+
+	# Prompt user and save user input to the variable 'reply'
+	read -r reply 
+}
 
 ###################
 # Cache functions #
@@ -164,10 +194,64 @@ done
 #################
 # Main Function #
 #################
-print_green "Search Torrent : "
-read query
+# Call 'reset_ifs' function when exiting script
 
-echo $query
+#check_dependencies ? // to do
+
+search_torrent () {
+	if [ -z "${torrent_title_input}"];then
+		prompt "Search torrent : "
+		torrent_title_input="${reply}"
+	fi
+
+	print_green "Searching for '${torrent_title_input}'..."
+	curl --silent --compressed 'https://nyaa.si' > tmp.html 
+
+	shopt -s nocasematch    #Dont care about the character case
+	text=$(cat tmp.html)
+	clear
+regex= $text | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | sort -u
+[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
+# get link href with regex
+#echo "$text"
+#	text = $(cat tmp.html)
+#	regex = "$text"  | grep -Eo "magnet:(.)[a-z0-9A-Z./?=_:-]*"
+#	[[ $text ~= $regex ]] && echo ${BASH_REMATCH[2]}
+#	echo $text
+}
+
+#print_green "Search Torrent : "
+#read query
+
+#echo $query
+
+
+
+input_controls() {
+
+	print_list_item "a" "Search another torrent"
+	print_list_item "q" "Exit"
+
+	printf "\n"
+	prompt "Enter input:"
+	user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
+
+	case "${user_input}" in
+		a)
+			torrent_title_input=
+			clear
+			main
+			return 1
+			;;
+		q)
+			clear
+			exit 0
+			;;
+	esac
+	
+	clear
+	input_controls
+}
 #shopt -s nocasematch    #Dont care about the character case
 #text=$(cat text.ini)
 #regex=cat *.ini | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | sort -u
@@ -187,3 +271,13 @@ echo $query
 #cat text.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*"  | fzf && peerflix -l
 
 #peerflix -l -k $magnet
+
+
+
+
+main() {
+	search_torrent
+	input_controls
+}
+
+main
