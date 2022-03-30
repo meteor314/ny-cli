@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #Version 
 version="1.0.2"
 
@@ -69,25 +70,27 @@ show_help() {
 	  -C, --clear-cache	Clear cache (${cache_dir})
 	EOF
 }
+error () {
+	# display an error message in red
+	print_red "$*" >&2
+}
 
 
+die () {
+	error "$*"
+	exit 1
+}
 
-
-check_dependencies() {
-	for dependency in "${dependencies[@]}"; do
-		if ! command -v "${dependency}" &> /dev/null; then
-			if ! pip3 show "${dependency}" &> /dev/null; then
-				print_red "Missing dependency: '${dependency}'"
-				exit_script=true
-			else
-				python_cmd_prefix=true
-			fi
+check_dependencies () {
+	# checks if dependencies are present
+	for dep; do
+		if ! command -v "$dep" >/dev/null ; then
+			error "Program \"$dep\" not found. Please install it."
+			#aria2c is in the package aria2
+			[ "$dep" = "aria2c" ] && error "To install aria2c, Type <your_package_manager> aria2"
+			die
 		fi
 	done
-
-	if [[ "${exit_script}" == "true" ]]; then
-		exit 1
-	fi
 }
 
 
@@ -256,9 +259,10 @@ input_controls() {
 	input_controls
 }
 
+check_dependencies "curl" "cat" "sed" "grep" "git" "mpv" "peerflix" "npm" 
 
 main() {
-	#check_dependencies #(?) To fix
+	check_dependencies #(?) To fix
 	search_torrent
 	input_controls
 }

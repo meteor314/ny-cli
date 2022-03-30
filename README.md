@@ -1,6 +1,4 @@
-# ny-cli
-
-<h1 align="center">ny-cli</h1>
+<h1 align="center" > ny-cli</h1>
 <p align="center">A  tool which search magnet links and stream it with peerflix from nyaa.si
 </p>
 <img src="src/ny-cli.gif" width='100%'>
@@ -28,7 +26,7 @@ sudo apt-get install mpv
 ```
 
 ## Installation
-
+## Linux
 ### cURL
 cURL **ny-cli** to your **$PATH** and give execute permissions.
 
@@ -36,6 +34,23 @@ cURL **ny-cli** to your **$PATH** and give execute permissions.
 sudo curl -sL "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli" -o /usr/local/bin/ny-cli
 sudo chmod +x /usr/local/bin/ny-cli
 ```
+## Windows
+You need scoop to install on your.<b><i> [Here]</i> </b>you can find a complete documentation.(https://scoop.sh/)
+The easiest way to install it is to open powershell (as a simple user) paste this.
+
+```sh
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+```
+```sh
+Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+```
+
+```sh
+git clone https://github.com/meteor314/ny-cli.git && cd ny-cli
+scoop install manifest
+```
+
+
 # How to use ?
 Juste write 
 ```sh
@@ -44,12 +59,12 @@ ny-cli
 ```
 - To update, just do `curl` again, no need to `chmod` anymore.
 - To uninstall, simply remove `ny-cli` from your **$PATH**, for example 
-```
-sh sudo rm -f /usr/local/bin/ny-cli
+```sh
+ sudo rm -f /usr/local/bin/ny-cli
 ```
 
 ## License
-This project is licensed under [Apache](https://raw.githubusercontent.com/Illumina/licenses/master/gpl-3.0.txt).
+This project is licensed under [Apache](https://raw.githubusercontent.com/meteor314/ny-cli/master/LICENSE).
 
 <i>Please read [Disclaimer.md](https://github.com/meteor314/ny-cli/blob/master/Disclaimer.md) before any usage. Happy torrent :) <i>
 
