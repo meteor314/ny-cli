@@ -1,6 +1,6 @@
 {
     "version": "1.0.2",
-    "url": "https://github.com/meteor314/ny-cli/releases/download/Dev/ny-cli.zip",
-    "extract_dir": "ny-cli",
+    "url": "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli",
+    "extract_dir": "$env:USERPROFILE/.cache",
     "bin": "ny-cli"
 }
