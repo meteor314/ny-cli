@@ -3,6 +3,7 @@
 <h1 align="center">ny-cli</h1>
 <p align="center">A  tool which search magnet links and stream it with peerflix from nyaa.si
 </p>
+<img src="src/ny-cli.gif" width='100%'>
 
 ### How does this work?
 This is a shell script. It scape Nyaa and get the magnet link.
