@@ -202,17 +202,24 @@ search_torrent () {
 	if [ -z "${torrent_title_input}"];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
+		torrent_title_input=${torrent_title_input// /+} #replace space by +  for example detah note => death+note|  sed 'y/ /+/'
+		#print_red "$torrent_title_input"
+		#sleep 10
+		
 	fi
 
 	print_green "Searching for '${torrent_title_input}'..."
-	curl --silent --compressed 'https://nyaa.si' > tmp.html 
+	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
+
 
 	shopt -s nocasematch    #Dont care about the character case
 	text=$(cat tmp.html)
-	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 7 | fzf ) -k  # print only 7 torrent, and -k = play with mpv
+	sleep 1
 
-	#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
+	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
+	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 7 | sort -u | fzf ) -k  # print only 7 torrent, and -k = play with mpv
+
+	#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}cl
 	# get link href with regex
 	#echo "$text"
 	#	text = $(cat tmp.html)
