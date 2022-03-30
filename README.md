@@ -54,7 +54,7 @@ scoop install manifest
 # How to use ?
 Juste write 
 ```sh
-ny-cli
+ny-cli --update
 # ny-cli -h (for options)
 ```
 - To update, just do `curl` again, no need to `chmod` anymore.

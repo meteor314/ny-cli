@@ -6,8 +6,6 @@ version="1.0.2"
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
-dependencies=("curl", "cat", "sed", "fzf", "npm",  "patch", "mkdir", "mpv", "peerflix" )
-
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 
 #Out put text color
@@ -259,7 +257,7 @@ input_controls() {
 	input_controls
 }
 
-check_dependencies "curl" "cat" "sed" "grep" "git" "mpv" "peerflix" "npm" 
+check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "peerflix" "npm" 
 
 main() {
 	check_dependencies #(?) To fix
