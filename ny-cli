@@ -5,7 +5,7 @@ version="1.0.1"
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
-dependencies=("curl", "cat", "sed", "awk", "rm",  "patch", "mkdir", "mpv", "peerflix" )
+dependencies=("curl", "cat", "sed", "fzf", "npm",  "patch", "mkdir", "mpv", "peerflix" )
 
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 
@@ -209,21 +209,17 @@ search_torrent () {
 
 	shopt -s nocasematch    #Dont care about the character case
 	text=$(cat tmp.html)
-	clear
-regex= $text | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | sort -u
-[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
-# get link href with regex
-#echo "$text"
-#	text = $(cat tmp.html)
-#	regex = "$text"  | grep -Eo "magnet:(.)[a-z0-9A-Z./?=_:-]*"
-#	[[ $text ~= $regex ]] && echo ${BASH_REMATCH[2]}
-#	echo $text
+	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
+	peerflix -l  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 10 | fzf )  # print only 10 torrent
+
+	#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
+	# get link href with regex
+	#echo "$text"
+	#	text = $(cat tmp.html)
+	#	regex = "$text"  | grep -Eo "magnet:(.)[a-z0-9A-Z./?=_:-]*"
+	#	[[ $text ~= $regex ]] && echo ${BASH_REMATCH[2]}
+	#	echo $text
 }
-
-#print_green "Search Torrent : "
-#read query
-
-#echo $query
 
 
 
@@ -252,30 +248,10 @@ input_controls() {
 	clear
 	input_controls
 }
-#shopt -s nocasematch    #Dont care about the character case
-#text=$(cat text.ini)
-#regex=cat *.ini | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | sort -u
-#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
-# get link href with regex
-#echo "$text"
-
-
-#cat *.ini | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | sort -u
-
-
-
-#curl -s --compressed 'https://nyaa.si' > text.html
-#cat text.html | pup ".text-center a" > text.ini
-
-
-#cat text.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*"  | fzf && peerflix -l
-
-#peerflix -l -k $magnet
-
-
 
 
 main() {
+	#check_dependencies #(?) To fix
 	search_torrent
 	input_controls
 }
