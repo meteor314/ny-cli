@@ -51,9 +51,9 @@ sh sudo rm -f /usr/local/bin/ny-cli
 ## License
 This project is licensed under [Apache](https://raw.githubusercontent.com/Illumina/licenses/master/gpl-3.0.txt).
 
-<i>Please read Disclaimer.md before any usage. Happy torrent :) <i>
+<i>Please read [Disclaimer.md](https://github.com/meteor314/ny-cli/blob/master/Disclaimer.md) before any usage. Happy torrent :) <i>
 
 
 <br >
-<img src="https://imgur.com/hU033Ln.png" >
+<img src="https://imgur.com/hU033Ln.png"/>
 
