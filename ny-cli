@@ -210,7 +210,7 @@ search_torrent () {
 	shopt -s nocasematch    #Dont care about the character case
 	text=$(cat tmp.html)
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 1 | fzf ) -k  # print only 10 torrent, and -k = play with mpv
+	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 7 | fzf ) -k  # print only 7 torrent, and -k = play with mpv
 
 	#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}
 	# get link href with regex
