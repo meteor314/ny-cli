@@ -85,7 +85,7 @@ check_dependencies () {
 		if ! command -v "$dep" >/dev/null ; then
 			error "Program \"$dep\" not found. Please install it."
 			#aria2c is in the package aria2
-			[ "$dep" = "aria2c" ] && error "To install put, Type scoop install put if you're using windows or Type <your_package_manager_name> put"
+			[ "$dep" = "put" ] && error "To install put, Type scoop install put if you're using windows or Type <your_package_manager_name> put"
 			die
 		fi
 	done
