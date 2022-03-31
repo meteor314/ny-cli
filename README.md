@@ -54,14 +54,19 @@ scoop install manifest
 # How to use ?
 Juste write 
 ```sh
-ny-cli --update
+ny-cli 
 # ny-cli -h (for options)
 ```
-- To update, just do `curl` again, no need to `chmod` anymore.
+- To update, just do 
+```sh
+ny-cli --update
+```
+
 - To uninstall, simply remove `ny-cli` from your **$PATH**, for example 
 ```sh
  sudo rm -f /usr/local/bin/ny-cli
 ```
+<h3 style='color:orange' >Please use <a href="https://gitforwindows.org/">git bash </a> on windows, cmd or powershell may not be work correctly :\ </h3>
 
 ## License
 This project is licensed under [Apache](https://raw.githubusercontent.com/meteor314/ny-cli/master/LICENSE).
