@@ -81,15 +81,18 @@ die () {
 
 check_dependencies () {
 	# checks if dependencies are present
+
+	iterate=0
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
 			error "Program \"$dep\" not found. Please install it."
 			[ "$dep" = "put" ] && error "To install put, Type scoop install put if you're using windows or Type <your_package_manager_name> put"
-			die
+			
 		fi
 	done
-}
 
+}
+check_dependencies
 
 prompt() { 
 	# Print text in green (${1}) and blue (${2}) 
@@ -102,6 +105,7 @@ prompt() {
 ###################
 # Cache functions #
 ###################
+
 
 show_cache_size() {
 	# If cache_dir does not exist, create it
@@ -208,24 +212,33 @@ search_torrent () {
 		
 	fi
 
+
 	print_green "Searching for '${torrent_title_input}'..."
 	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
+	echo "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
+
+
 
 
 	shopt -s nocasematch    #Dont care about the character case
 	text=$(cat tmp.html)
 	sleep 1
-
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -n 7 | sort -u | fzf ) -k  # print only 7 torrent, and -k = play with mpv
 
-	#[[ $text =~ $regex ]] && echo ${BASH_REMATCH[2]}cl
-	# get link href with regex
-	#echo "$text"
-	#	text = $(cat tmp.html)
-	#	regex = "$text"  | grep -Eo "magnet:(.)[a-z0-9A-Z./?=_:-]*"
-	#	[[ $text ~= $regex ]] && echo ${BASH_REMATCH[2]}
-	#	echo $text
+	title=$(cat tmp.html | grep -Po 'view\/[0-9]{5,9}" title="[a-z0-9A-Z_\-\[\(\)\]\{\}\.\+ ]*' | fzf ) 
+
+	echo $title > tmp.html
+	title=$(cat tmp.html | grep -Po '[0-9]{5,9}')
+	echo $title
+	sleep 2
+
+	echo $title > tmp.html
+	
+	title="https://nyaa.si/view/${title}" # >tmp.html
+	curl  ${title} > tmp.html 
+	sleep 1
+	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") -l -k  # print only 7 torrent, and -k = play with mpv
+
 }
 
 
