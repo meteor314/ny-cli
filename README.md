@@ -46,7 +46,8 @@ Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.
 ```
 
 ```sh
-git clone https://github.com/meteor314/ny-cli.git && cd ny-cli
+git clone https://github.com/meteor314/ny-cli.git 
+cd ny-cli
 scoop install manifest
 ```
 
@@ -66,7 +67,6 @@ ny-cli --update
 ```sh
  sudo rm -f /usr/local/bin/ny-cli
 ```
-<h3 style='color:orange' >Please use <a href="https://gitforwindows.org/">git bash </a> on windows, cmd or powershell may not be work correctly :\ </h3>
 
 ## License
 This project is licensed under [Apache](https://raw.githubusercontent.com/meteor314/ny-cli/master/LICENSE).
