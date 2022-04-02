@@ -225,7 +225,9 @@ search_torrent () {
 	sleep 1
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
 
-	title=$(cat tmp.html | grep -Po 'view\/[0-9]{5,9}" title="[a-z0-9A-Z_\-\[\(\)\]\{\}\.\+ ]*' | fzf ) 
+	#title=$(cat tmp.html | grep -Po 'view\/[0-9]{5,9}" title="[a-z0-9A-Z_\-\[\(\)\]\{\}\.\+ ]*' | fzf ) 
+
+	title=$( cat tmp.html | grep -Po "\/view\/[0-9]{5,9}\" title=\"[a-zA-Z0-9_\-\[\]\(\)\{\}\.\+\\%\&\;:2一-龠ぁ-ゔァ-ヴー々〆〤 ]*" | fzf  ) 
 
 	echo $title > tmp.html
 	title=$(cat tmp.html | grep -Po '[0-9]{5,9}')
