@@ -2,6 +2,7 @@
 
 #Version 
 version="1.0.2"
+export LANG=C.UTF-8
 
 #Dependencies
 old_ifs="${IFS}"
@@ -51,6 +52,9 @@ print_list_item() { # Print text in blue (${1}) and the default color (${2})
 ######################
 # Auxilary functions #
 ######################
+
+
+
 
 show_help() {
 	while IFS= read -r line; do
@@ -216,19 +220,16 @@ search_torrent () {
 	print_green "Searching for '${torrent_title_input}'..."
 	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
 	echo "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
-
-
-
-
-	shopt -s nocasematch    #Dont care about the character case
+	
 	text=$(cat tmp.html)
-	sleep 1
+	
+
+
+
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
 
-	#title=$(cat tmp.html | grep -Po 'view\/[0-9]{5,9}" title="[a-z0-9A-Z_\-\[\(\)\]\{\}\.\+ ]*' | fzf ) 
-
 	title=$( cat tmp.html | grep -Po "\/view\/[0-9]{5,9}\" title=\"[a-zA-Z0-9_\-\[\]\(\)\{\}\.\+\\%\&\;:2一-龠ぁ-ゔァ-ヴー々〆〤 ]*" | fzf  ) 
-
+	
 	echo $title > tmp.html
 	title=$(cat tmp.html | grep -Po '[0-9]{5,9}')
 	echo $title
