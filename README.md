@@ -47,8 +47,14 @@ Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.
 
 ```sh
 git clone https://github.com/meteor314/ny-cli.git 
+```
+
+```sh
 cd ny-cli
-scoop install manifest
+```
+
+```sh
+scoop install ny-cli
 ```
 
 

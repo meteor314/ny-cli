@@ -8,6 +8,16 @@ export LANG=C.UTF-8
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
+#!/bin/bash
+
+#Version 
+version="1.0.2"
+export LANG=C.UTF-8
+
+#Dependencies
+old_ifs="${IFS}"
+cache_dir="${HOME}/.cache/ny-cli"
+github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 
 #Out put text color
 #Reset
@@ -40,12 +50,12 @@ print_blue() { # Print green text
 }
 
 print_white() { # Print green text
-	echo -e "${white}" "${*}"
+	echo -e "${White}" "${*}"
 }
 
 
-print_list_item() { # Print text in blue (${1}) and the default color (${2})
-	printf "${blue}%s${no_color} ${no_color}%s${no_color}\n" "[${1}]" "${2}"
+print_list_item() { 
+	printf "${Blue}%s${Color_Off} ${Color_Off}%s${Color_Off}\n" "[${1}]" "${2}"
 }
 
 
@@ -86,12 +96,16 @@ die () {
 check_dependencies () {
 	# checks if dependencies are present
 
-	iterate=0
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
-			error "Program \"$dep\" not found. Please install it."
-			[ "$dep" = "put" ] && error "To install put, Type scoop install put if you're using windows or Type <your_package_manager_name> put"
-			
+			if [ "$dep" = "peerflix" ]; then
+				error "Program \"$dep\" not found. Please install it. Type \"scoop install $dep -g\" if you're using windows or Type \"sudo npm install $dep -g\""
+			else 
+				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or Type apt-get install $dep"
+			fi
+
+			print_white "Exiting..."
+			die			
 		fi
 	done
 
@@ -100,7 +114,7 @@ check_dependencies
 
 prompt() { 
 	# Print text in green (${1}) and blue (${2}) 
-	printf "${green}%s${no_color} ${blue}%s${no_color}" "${1}" "${2}"
+	printf "${Green}%s${Color_Off} ${Blue}%s${Color_Off}" "${1}" "${2}"
 
 	# Prompt user and save user input to the variable 'reply'
 	read -r reply 
@@ -206,41 +220,37 @@ done
 
 #check_dependencies ? // to do
 
+
 search_torrent () {
 	if [ -z "${torrent_title_input}"];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
-		torrent_title_input=${torrent_title_input// /+} #replace space by +  for example detah note => death+note|  sed 'y/ /+/'
-		#print_red "$torrent_title_input"
-		#sleep 10
-		
+		torrent_title_input=${torrent_title_input// /+} #replace space by +  for example detah note => death+note
 	fi
 
 
 	print_green "Searching for '${torrent_title_input}'..."
 	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
-	echo "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
+	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
 	text=$(cat tmp.html)
-	
-
-
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-
-	title=$( cat tmp.html | grep -Po "\/view\/[0-9]{5,9}\" title=\"[a-zA-Z0-9_\-\[\]\(\)\{\}\.\+\\%\&\;:2一-龠ぁ-ゔァ-ヴー々〆〤 ]*" | fzf  ) 
-	
+	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[a-zA-Z0-9_\-\[\]\(\)\{\}\.\+\\%\&\;:2一-龠ぁ-ゔァ-ヴー々〆〤 ]*" | fzf  ) 	
 	echo $title > tmp.html
+	
+
+
+
 	title=$(cat tmp.html | grep -Po '[0-9]{5,9}')
 	echo $title
-	sleep 2
-
 	echo $title > tmp.html
+
 	
 	title="https://nyaa.si/view/${title}" # >tmp.html
-	curl  ${title} > tmp.html 
-	sleep 1
-	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") -l -k  # print only 7 torrent, and -k = play with mpv
+	curl  ${title} > tmp.html
+	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") -l -k -t # print only 7 torrent, and -k = play with mpv
+
 
 }
 
@@ -272,10 +282,10 @@ input_controls() {
 	input_controls
 }
 
-check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "peerflix" "npm" 
+check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "peerflix"
 
 main() {
-	check_dependencies #(?) To fix
+	check_dependencies # //To fix
 	search_torrent
 	input_controls
 }
