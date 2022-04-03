@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Version 
-version="1.0.2"
+version="1.5.0"
 export LANG=C.UTF-8
 
 #Dependencies
@@ -10,14 +10,6 @@ cache_dir="${HOME}/.cache/ny-cli"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 #!/bin/bash
 
-#Version 
-version="1.0.2"
-export LANG=C.UTF-8
-
-#Dependencies
-old_ifs="${IFS}"
-cache_dir="${HOME}/.cache/ny-cli"
-github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 
 #Out put text color
 #Reset
