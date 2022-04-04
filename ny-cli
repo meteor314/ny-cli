@@ -138,10 +138,6 @@ detect_os() {
 
 
 show_cache_size() {
-	# If cache_dir does not exist, create it
-	if [[ ! -d "${cache_dir}" ]]; then
-		mkdir --parents "${cache_dir}"
-	fi
 
 	cache_size="$(du -sh "${cache_dir}" | awk '{print $1}')"
 
@@ -248,7 +244,7 @@ search_torrent () {
 	text=$(cat tmp.html)
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \"" in a string using regex and user can select the content with fzf
+	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf
 	echo $title > tmp.html
 	
 
@@ -294,14 +290,21 @@ input_controls() {
 	clear
 	input_controls
 }
+create_folder() {	
+	# If cache_dir does not exist, create it
+	if [[ ! -d "${cache_dir}" ]]; then
+		mkdir --parents "${cache_dir}"
+		
+	fi
 
+}
 check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "peerflix"
-
+create_folder
 main() {
-	check_dependencies # //To fix
 	search_torrent
 	input_controls
 	detect_os
 }
+cd $cache_dir
 
 main

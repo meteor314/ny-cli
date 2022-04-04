@@ -1,5 +1,5 @@
 <div align="center">  <h1 style="font-size:30px" >ny-cli <br />
-<img src="src/ny-cli.png" > </h1>  </div>
+<img src="src/ny-cli.png" width="48px" height="48px" > </h1>  </div>
 <p align="center">A  tool which search magnet links and stream it with peerflix from nyaa.si
 </p>
 <img src="src/ny-cli.gif" width='100%'>
