@@ -44,6 +44,9 @@ Set-ExecutionPolicy RemoteSigned -scope CurrentUser
 ```sh
 Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
 ```
+```sh
+scoop bucket add extras
+```
 
 ```sh
 git clone https://github.com/meteor314/ny-cli.git 

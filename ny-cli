@@ -1,8 +1,6 @@
 #!/bin/bash
-
 #Version 
 version="1.5.0"
-export LANG=C.UTF-8
 
 #Dependencies
 old_ifs="${IFS}"
@@ -54,9 +52,6 @@ print_list_item() {
 ######################
 # Auxilary functions #
 ######################
-
-
-
 
 show_help() {
 	while IFS= read -r line; do
@@ -112,6 +107,31 @@ prompt() {
 	read -r reply 
 }
 
+
+#detec user os 
+
+detect_os() {
+	UNAME=$( command -v uname)
+
+	case $( "${UNAME}" | tr '[:upper:]' '[:lower:]') in
+	linux*)
+		printf 'linux\n'
+		;;
+	darwin*)
+		printf 'darwin\n'
+		;;
+	msys*|cygwin*|mingw*)
+		# or possible 'bash on windows'
+		printf 'windows\n'
+		;;
+	nt|win*)
+		printf 'windows\n'
+		;;
+	*)
+		printf 'unknown\n'
+		;;
+	esac
+}
 ###################
 # Cache functions #
 ###################
@@ -228,7 +248,7 @@ search_torrent () {
 	text=$(cat tmp.html)
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[a-zA-Z0-9_\-\[\]\(\)\{\}\.\+\\%\&\;:2一-龠ぁ-ゔァ-ヴー々〆〤 ]*" | fzf  ) 	
+	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \"" in a string using regex and user can select the content with fzf
 	echo $title > tmp.html
 	
 
@@ -280,6 +300,7 @@ main() {
 	check_dependencies # //To fix
 	search_torrent
 	input_controls
+	detect_os
 }
 
 main
