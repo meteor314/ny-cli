@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="1.5.0"
+version="1.5.1"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -261,6 +261,7 @@ search_torrent () {
 	
 	title="https://nyaa.si/view/${title}" # >tmp.html
 	curl  ${title} > tmp.html
+	sleep 1
 	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") -l -k -t # print only 7 torrent, and -k = play with mpv
 
 

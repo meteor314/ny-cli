@@ -1,4 +1,5 @@
-<h1 align="center" > ny-cli</h1>
+<div align="center">  <h1 style="font-size:30px" >ny-cli <br />
+<img src="src/ny-cli.png" > </h1>  </div>
 <p align="center">A  tool which search magnet links and stream it with peerflix from nyaa.si
 </p>
 <img src="src/ny-cli.gif" width='100%'>
@@ -10,11 +11,12 @@ For scraping script use simple gnu utils like sed, awk, paste, cut.
 
 ## Requirements
 
-You need <b>NPM</b>. You can follow this tutorial if you don't have node alreday installed.
-* [node](https://www.geeksforgeeks.org/installation-of-node-js-on-linux/) - Installation of Node.js on Linux 
+You need <b style='color:orange'>NPM</b>. You can follow this tutorial if you don't have node alreday installed.
+* [node](https://www.geeksforgeeks.org/installation-of-node-js-on-linux/) - Installation of Node.js on Linux.
+* If you are using <b style='color:orange'> Windows or Mac OS</b>, you can directly download from [nodejs.org/](https://nodejs.org/en/download/) here.
 * [peerflix](https://github.com/mafintosh/peerflix) - A tool to stream torrent. 
 ```sh 
-sudo npm install peerflix -g
+npm install peerflix -g 
 ```
 You also need to install [mpv](https://mpv.io/). You can install it on Arch
 ```sh
@@ -32,10 +34,10 @@ cURL **ny-cli** to your **$PATH** and give execute permissions.
 
 ```sh
 sudo curl -sL "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli" -o /usr/local/bin/ny-cli
-sudo chmod +x /usr/local/bin/ny-cli
+sudo chmod +x /usr/local/bin/ny-cli && sudo npm install peerflix -g
 ```
 ## Windows
-You need scoop to install on your.<b><i> [Here]</i> </b>you can find a complete documentation.(https://scoop.sh/)
+You need scoop to install on your.<b><i> </i> </b>you can find a complete documentation [here.](https://scoop.sh/)
 The easiest way to install it is to open powershell (as a simple user) paste this.
 
 ```sh
@@ -59,6 +61,9 @@ cd ny-cli
 ```sh
 scoop install ny-cli
 ```
+```sh
+npm install peerflix -g
+```
 
 
 # How to use ?
@@ -74,15 +79,86 @@ ny-cli --update
 
 - To uninstall, simply remove `ny-cli` from your **$PATH**, for example 
 ```sh
- sudo rm -f /usr/local/bin/ny-cli
+ sudo rm -rf /usr/local/bin/ny-cli
 ```
+## Issue <hr>
+If you are using it, for the first time, you can get this error, I don't know why, but just retry 2 3 times with diffrent link and it should work. 
+```sh
+meteor@meteor-VirtualBox:~/Desktop/vwt.cad-viewer$ ny-cli 
+Search torrent :  naruto
+ Searching for 'naruto'...
+Link find : https://nyaa.si/?f=0&c=0_0&q=naruto&s=seeders&o=desc
+1509859
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  5066    0  5066    0     0  22122      0 --:--:-- --:--:-- --:--:-- 22026
+Usage: peerflix magnet-link-or-torrent [options]
+
+Options:
+  -c, --connections  max connected peers                            [default: 100]
+  -p, --port         change the http port                           [default: 8888]
+  -i, --index        changed streamed file (index)                
+  -l, --list         list available files with corresponding index
+  -t, --subtitles    load subtitles file                          
+  -q, --quiet        be quiet                                     
+  -v, --vlc          autoplay in vlc*                             
+  -s, --airplay      autoplay via AirPlay                         
+  -m, --mplayer      autoplay in mplayer*                         
+  -g, --smplayer     autoplay in smplayer*                        
+  --mpchc            autoplay in MPC-HC player*                   
+  --potplayer        autoplay in Potplayer*                       
+  -k, --mpv          autoplay in mpv*                             
+  -o, --omx          autoplay in omx**                            
+  -w, --webplay      autoplay in webplay                          
+  -j, --jack         autoplay in omx** using the audio jack       
+  -f, --path         change buffer file path                      
+  -b, --blocklist    use the specified blocklist                  
+  -n, --no-quit      do not quit peerflix on vlc exit             
+  -a, --all          select all files in the torrent              
+  -r, --remove       remove files on exit                         
+  -h, --hostname     host name or IP to bind the server to        
+  -e, --peer         add peer by ip:port                          
+  -x, --peer-port    set peer listening port                      
+  -d, --not-on-top   do not float video on top                    
+  --on-downloaded    script to call when file is 100% downloaded  
+  --on-listening     script to call when server goes live         
+  --version          prints current version                       
+
+Options passed after -- will be passed to your player
+
+  "peerflix magnet-link --vlc -- --fullscreen" will pass --fullscreen to vlc
+
+* Autoplay can take several seconds to start since it needs to wait for the first piece
+** OMX player is the default Raspbian video player
+
+[a] Search another torrent
+[q] Exit
+
+
+```
+
+## TO DO / WISH LIST
+
+- [✓] Compatibilty with windows.
+- [] Download torrent in a specific folder (with ny-cli -d)
+- [] Send notification after download ( notify-send(?) ) for W10, Mac & Linux.
+- [] Compatibility with mac os.
+- [] Fix bugs with git bash in W10
+- [] Make a history of all torrent in ./.cache/history.ini
+- [] Detect files formats, for example, if it is a zip file or .exe just download it, don't try to open with mpv
+- [] add vlc player.
+- [] Create a custom node webserver based on webtorrent for a better compatibility.
 
 ## License
 This project is licensed under [Apache](https://raw.githubusercontent.com/meteor314/ny-cli/master/LICENSE).
 
 <i>Please read [Disclaimer.md](https://github.com/meteor314/ny-cli/blob/master/Disclaimer.md) before any usage. Happy torrent :) <i>
 
+<h3 style='color:pink'>
+Just keep in mind that :
+"Video playing time may vary depending on torrent availability, or may not play if torrent is old and there are no seeders."
+</h3>
 
-<br >
+#### If you encounter a bug, don't hesitate to open an issue, and any help will be welcome ^_^
 <img src="https://imgur.com/hU033Ln.png"/>
 
