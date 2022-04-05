@@ -1,12 +1,15 @@
 #!/bin/bash
 #Version 
-version="1.5.1"
+version="1.6.1"
 
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
+logo="${HOME}/.cache/ny-cli/logo.png"
+download_dir="${HOME}/Downloads/"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
-#!/bin/bash
+export LC_ALL=en_US.utf8  
+
 
 
 #Out put text color
@@ -44,8 +47,13 @@ print_white() { # Print green text
 }
 
 
+print_purple() { # Print green text
+	echo -e "${Purple}}" "${*}"
+}
+
+
 print_list_item() { 
-	printf "${Blue}%s${Color_Off} ${Color_Off}%s${Color_Off}\n" "[${1}]" "${2}"
+	printf "${Yellow}%s${Color_Off} ${Color_Off}%s${Color_Off}\n" "[${1}]" "${2}"
 }
 
 
@@ -69,10 +77,20 @@ show_help() {
 	  -C, --clear-cache	Clear cache (${cache_dir})
 	EOF
 }
+
+welcome_msg() {
+	while IFS= read -r line; do
+		printf "%s\n" "${line}"
+	done <<-EOF
+	Please try stream-cli -h for help and another options.
+	EOF
+}
+
 error () {
 	# display an error message in red
 	print_red "$*" >&2
 }
+
 
 
 die () {
@@ -86,9 +104,9 @@ check_dependencies () {
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
 			if [ "$dep" = "peerflix" ]; then
-				error "Program \"$dep\" not found. Please install it. Type \"scoop install $dep -g\" if you're using windows or Type \"sudo npm install $dep -g\""
+				error "Program \"$dep\" not found. Please install it. Type \"scoop install $dep -g\" if you're using windows or type \" npm install $dep -g\""
 			else 
-				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or Type apt-get install $dep"
+				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or type apt-get install $dep"
 			fi
 
 			print_white "Exiting..."
@@ -110,25 +128,24 @@ prompt() {
 
 #detec user os 
 
+
+#detec user os 
+
 detect_os() {
 	UNAME=$( command -v uname)
 
 	case $( "${UNAME}" | tr '[:upper:]' '[:lower:]') in
 	linux*)
-		printf 'linux\n'
+		print_blue 'Linux detected ^-^,  opening default file manager \n'
+		notify-send "stream-cli" \ "Download Finish, you can quit this application." -i "${logo}"
+		xdg-open "${download_dir}"
 		;;
 	darwin*)
 		printf 'darwin\n'
 		;;
-	msys*|cygwin*|mingw*)
-		# or possible 'bash on windows'
-		printf 'windows\n'
-		;;
-	nt|win*)
-		printf 'windows\n'
-		;;
-	*)
-		printf 'unknown\n'
+	msys*|cygwin*|nt|win*|mingw*)
+		print_blue 'Window detected ^-^,  opening default file manager \n'
+		start "${download_dir}"
 		;;
 	esac
 }
@@ -156,6 +173,20 @@ clear_cache() {
 		rm -r "${cache_dir:?}/"
 		print_green "Cache successfully cleared"
 	fi
+}
+
+create_cache_folder() {
+	# If cache_dir does not exist, create it
+	if [[ ! -d "${cache_dir}" ]]; then
+		mkdir --parents "${cache_dir}"
+	fi
+	cd ${cache_dir}
+	#import logo if not exist
+	if [[ ! -f "${logo}" ]];then
+		welcome_msg
+		curl --silent -o logo.png "https://raw.githubusercontent.com/meteor314/ny-cli/master/src/ny-cli.png"
+	fi
+
 }
 
 ################
@@ -229,6 +260,23 @@ done
 #check_dependencies ? // to do
 
 
+download_torrent() {
+	peerflix  $magnet --path "${download_dir}" --no-quit 
+	
+	detect_os
+	xdg-open "${download_dir}"
+
+}
+watch_torrent() {
+	peerflix  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
+
+}
+
+main() {
+	input_controls
+	search_torrent
+}
+
 search_torrent () {
 	if [ -z "${torrent_title_input}"];then
 		prompt "Search torrent : "
@@ -241,10 +289,26 @@ search_torrent () {
 	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
-	text=$(cat tmp.html)
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
 	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf
+
+
+	if [[ -z "$title" ]]; then # if torrent is unavailable
+		print_red "An error occured, could not find this link, please chose another torrent :-("
+		print_purple "the torrents are chosen according to their popularity/number of seeders. \n Please choose among the first torrents proposed for a better experience."		
+
+		prompt  "Do you want to continue ?" "[Y/n]: "
+		user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
+
+		#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
+		if [[ "${user_input}" == "n" ]]; then
+			die
+		fi
+		torrent_title_input=
+		clear
+		main
+	fi
 	echo $title > tmp.html
 	
 
@@ -256,18 +320,32 @@ search_torrent () {
 
 	
 	title="https://nyaa.si/view/${title}" # >tmp.html
-	curl  ${title} > tmp.html
+	curl --globoff ${title} > tmp.html
 	sleep 1
-	peerflix  $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") -l -k -t # print only 7 torrent, and -k = play with mpv
+	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
+	echo "$magnet"
+
+	case "${user_input}" in
+		d)
+			download_torrent
+			return 1
+			;;
+		w)
+			watch_torrent
+			return 1
+			;;
+	esac
 
 
 }
 
 
 
+
 input_controls() {
 
-	print_list_item "a" "Search another torrent"
+	print_list_item "w" "Watch films, animes"
+	print_list_item "d" "Download films, animes (recommanded)"
 	print_list_item "q" "Exit"
 
 	printf "\n"
@@ -275,36 +353,23 @@ input_controls() {
 	user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
 
 	case "${user_input}" in
-		a)
-			torrent_title_input=
-			clear
-			main
+		w|watch|d|download)
+			search_torrent
 			return 1
 			;;
-		q)
+		q|quit|exit)
 			clear
 			exit 0
 			;;
 	esac
-	
+
 	clear
 	input_controls
 }
-create_folder() {	
-	# If cache_dir does not exist, create it
-	if [[ ! -d "${cache_dir}" ]]; then
-		mkdir --parents "${cache_dir}"
-		
-	fi
 
-}
 check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "peerflix"
-create_folder
-main() {
-	search_torrent
-	input_controls
-	detect_os
-}
-cd $cache_dir
+create_cache_folder
+
+
 
 main
