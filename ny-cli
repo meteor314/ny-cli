@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="1.6.1"
+version="1.7.0"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -119,7 +119,7 @@ check_dependencies
 
 prompt() { 
 	# Print text in green (${1}) and blue (${2}) 
-	printf "${Green}%s${Color_Off} ${Blue}%s${Color_Off}" "${1}" "${2}"
+	printf "${Yellow}%s${Color_Off} ${Blue}%s${Color_Off}" "${1}" "${2}"
 
 	# Prompt user and save user input to the variable 'reply'
 	read -r reply 
@@ -261,15 +261,29 @@ done
 
 
 download_torrent() {
+
+	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"
+	user_download_dir_folder="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
+
+
+	if [[ "${user_download_dir_folder}" == y ]]; then
+		prompt   "Specify a folder:"
+		user_download_dir_folder="$(printf "%s" "${reply}")"
+		if [[ ! -d ${user_download_dir_folder} ]]; then
+			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}. "
+			prompt "Press enter to continue:"
+			
+		else 	
+			download_dir=${user_download_dir_folder}
+		fi
+	fi
 	peerflix  $magnet --path "${download_dir}" --no-quit 
 	
 	detect_os
-	xdg-open "${download_dir}"
 
 }
 watch_torrent() {
 	peerflix  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
-
 }
 
 main() {
