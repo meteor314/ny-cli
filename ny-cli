@@ -137,7 +137,7 @@ detect_os() {
 	case $( "${UNAME}" | tr '[:upper:]' '[:lower:]') in
 	linux*)
 		print_blue 'Linux detected ^-^,  opening default file manager \n'
-		notify-send "stream-cli" \ "Download Finish, you can quit this application." -i "${logo}"
+		notify-send "ny-cli" \ "Download Finish, you can quit this application." -i "${logo}"
 		xdg-open "${download_dir}"
 		;;
 	darwin*)
@@ -148,6 +148,7 @@ detect_os() {
 		start "${download_dir}"
 		;;
 	esac
+	exit 1
 }
 ###################
 # Cache functions #
@@ -257,7 +258,6 @@ done
 #################
 # Call 'reset_ifs' function when exiting script
 
-#check_dependencies ? // to do
 
 
 download_torrent() {
@@ -270,29 +270,26 @@ download_torrent() {
 		prompt   "Specify a folder:"
 		user_download_dir_folder="$(printf "%s" "${reply}")"
 		if [[ ! -d ${user_download_dir_folder} ]]; then
-			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}. "
+			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
 			prompt "Press enter to continue:"
 			
 		else 	
 			download_dir=${user_download_dir_folder}
 		fi
 	fi
-	peerflix  $magnet --path "${download_dir}" --no-quit 
-	
+	print_blue "Content of this torrent, press enter to start download (all files will download in ${download_dir})."
+	peerflix   $magnet --path "${download_dir}" --no-quit -a --list --on-downloaded	detect_os # to do fix bugs
 	detect_os
+	
+
 
 }
 watch_torrent() {
 	peerflix  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
 }
 
-main() {
-	input_controls
-	search_torrent
-}
-
 search_torrent () {
-	if [ -z "${torrent_title_input}"];then
+	if [[ -z "${torrent_title_input}" ]];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
 		torrent_title_input=${torrent_title_input// /+} #replace space by +  for example detah note => death+note
@@ -384,6 +381,11 @@ input_controls() {
 check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "peerflix"
 create_cache_folder
 
+
+main() {
+	input_controls
+	search_torrent
+}
 
 
 main
