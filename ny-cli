@@ -285,7 +285,7 @@ download_torrent() {
 
 }
 watch_torrent() {
-	peerflix  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
+	stream  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
 }
 
 search_torrent () {
