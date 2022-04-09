@@ -14,7 +14,7 @@ For scraping script use simple gnu utils like sed, awk, paste, cut.
 You need <b style='color:orange'>NPM</b>. You can follow this tutorial if you don't have node alreday installed.
 * [node](https://www.geeksforgeeks.org/installation-of-node-js-on-linux/) - Installation of Node.js on Linux.
 * If you are using <b style='color:orange'> Windows or Mac OS</b>, you can directly download from [nodejs.org/](https://nodejs.org/en/download/) here.
-* [stream](https://github.com/mafintosh/stream) - A tool to stream torrent. 
+* [stream](https://github.com/meteor314/stream) - A tool to stream torrent. 
 ```sh 
 npm install @meteor314/stream -g 
 ```
