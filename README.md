@@ -1,6 +1,6 @@
 <div align="center">  <h1 style="font-size:30px" >ny-cli <br />
 <img src="src/ny-cli.png" width="48px" height="48px" > </h1>  </div>
-<p align="center">A  tool which search magnet links and stream it with peerflix from nyaa.si
+<p align="center">A  tool which search magnet links and stream it with @meteor314/stream from nyaa.si
 </p>
 <img src="src/ny-cli.gif" width='100%'>
 
@@ -14,9 +14,9 @@ For scraping script use simple gnu utils like sed, awk, paste, cut.
 You need <b style='color:orange'>NPM</b>. You can follow this tutorial if you don't have node alreday installed.
 * [node](https://www.geeksforgeeks.org/installation-of-node-js-on-linux/) - Installation of Node.js on Linux.
 * If you are using <b style='color:orange'> Windows or Mac OS</b>, you can directly download from [nodejs.org/](https://nodejs.org/en/download/) here.
-* [peerflix](https://github.com/mafintosh/peerflix) - A tool to stream torrent. 
+* [stream](https://github.com/mafintosh/stream) - A tool to stream torrent. 
 ```sh 
-npm install peerflix -g 
+npm install @meteor314/stream -g 
 ```
 You also need to install [mpv](https://mpv.io/). You can install it on Arch
 ```sh
@@ -34,7 +34,7 @@ cURL **ny-cli** to your **$PATH** and give execute permissions.
 
 ```sh
 sudo curl -sL "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli" -o /usr/local/bin/ny-cli
-sudo chmod +x /usr/local/bin/ny-cli && sudo npm install peerflix -g
+sudo chmod +x /usr/local/bin/ny-cli && sudo npm install @meteor314/stream -g
 ```
 ## Windows
 You need scoop to install on your.<b><i> </i> </b>you can find a complete documentation [here.](https://scoop.sh/)
@@ -62,7 +62,7 @@ cd ny-cli
 scoop install ny-cli
 ```
 ```sh
-npm install peerflix -g
+npm install @meteor314/stream -g
 ```
 
 
@@ -92,7 +92,7 @@ Link find : https://nyaa.si/?f=0&c=0_0&q=naruto&s=seeders&o=desc
   % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
                                  Dload  Upload   Total   Spent    Left  Speed
 100  5066    0  5066    0     0  22122      0 --:--:-- --:--:-- --:--:-- 22026
-Usage: peerflix magnet-link-or-torrent [options]
+Usage: stream magnet-link-or-torrent [options]
 
 Options:
   -c, --connections  max connected peers                            [default: 100]
@@ -113,7 +113,7 @@ Options:
   -j, --jack         autoplay in omx** using the audio jack       
   -f, --path         change buffer file path                      
   -b, --blocklist    use the specified blocklist                  
-  -n, --no-quit      do not quit peerflix on vlc exit             
+  -n, --no-quit      do not quit stream on vlc exit             
   -a, --all          select all files in the torrent              
   -r, --remove       remove files on exit                         
   -h, --hostname     host name or IP to bind the server to        
@@ -126,7 +126,7 @@ Options:
 
 Options passed after -- will be passed to your player
 
-  "peerflix magnet-link --vlc -- --fullscreen" will pass --fullscreen to vlc
+  "stream magnet-link --vlc -- --fullscreen" will pass --fullscreen to vlc
 
 * Autoplay can take several seconds to start since it needs to wait for the first piece
 ** OMX player is the default Raspbian video player

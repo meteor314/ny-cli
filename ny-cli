@@ -103,8 +103,8 @@ check_dependencies () {
 
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
-			if [ "$dep" = "peerflix" ]; then
-				error "Program \"$dep\" not found. Please install it. Type \"scoop install $dep -g\" if you're using windows or type \" npm install $dep -g\""
+			if [ "$dep" = "stream" ]; then
+				error "Program \"$dep\" not found. Please install it with this command \"npm install @meteor314/stream\""
 			else 
 				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or type apt-get install $dep"
 			fi
@@ -278,7 +278,7 @@ download_torrent() {
 		fi
 	fi
 	print_blue "Content of this torrent, press enter to start download (all files will download in ${download_dir})."
-	peerflix   $magnet --path "${download_dir}" --no-quit -a --list --on-downloaded	detect_os # to do fix bugs
+	stream   $magnet --path "${download_dir}"  -a --list --exit # to do fix bugs
 	detect_os
 	
 
@@ -332,9 +332,9 @@ search_torrent () {
 	
 	title="https://nyaa.si/view/${title}" # >tmp.html
 	curl --globoff ${title} > tmp.html
-	sleep 1
+
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
-	echo "$magnet"
+	print_green  "Magnet link find $magnet"
 
 	case "${user_input}" in
 		d)
@@ -378,7 +378,7 @@ input_controls() {
 	input_controls
 }
 
-check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "peerflix"
+check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "stream"
 create_cache_folder
 
 
