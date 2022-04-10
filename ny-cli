@@ -277,15 +277,14 @@ download_torrent() {
 			download_dir=${user_download_dir_folder}
 		fi
 	fi
-	print_blue "Content of this torrent, press enter to start download (all files will download in ${download_dir})."
-	stream   $magnet --path "${download_dir}"  -a --list --exit # to do fix bugs
+	stream   "$magnet" --path "${download_dir}"  -a --exit # to do fix bugs
 	detect_os
 	
 
 
 }
 watch_torrent() {
-	stream  $magnet --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
+	stream  "$magnet" --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
 }
 
 search_torrent () {
