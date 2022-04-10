@@ -278,7 +278,7 @@ download_torrent() {
 		fi
 	fi
 	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
-	stream   "$magnet" --path "${download_dir}"  -a --no-quit --exit -- --list   # to do fix bugs, fs => fullscreen
+	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit -- --fs   # to do fix bugs, fs => fullscreen
 	detect_os
 	
 
