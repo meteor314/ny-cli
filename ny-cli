@@ -292,8 +292,9 @@ search_torrent () {
 	if [[ -z "${torrent_title_input}" ]];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
-		torrent_title_input=${torrent_title_input// /+} #replace space by +  for example detah note => death+note
+		torrent_title_input=$(echo ${torrent_title_input} | sed 's/ /+/g') #replace space by +  for example detah note => death+note
 	fi
+
 
 
 	print_green "Searching for '${torrent_title_input}'..."
@@ -302,7 +303,7 @@ search_torrent () {
 	
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	title=$( cat tmp.html | grep -Po "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf
+	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf
 
 
 	if [[ -z "$title" ]]; then # if torrent is unavailable
@@ -325,17 +326,20 @@ search_torrent () {
 
 
 
-	title=$(cat tmp.html | grep -Po '[0-9]{5,9}')
-	echo $title
-	echo $title > tmp.html
+	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')
+	echo $web_site_link_id
+	echo $web_site_link_id > tmp.html
 
 	
-	title="https://nyaa.si/view/${title}" # >tmp.html
-	curl --globoff ${title} > tmp.html
+	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
+	curl --globoff ${web_site_link_id} > tmp.html
 
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
-	print_green  "Magnet link find $magnet"
+	print_green  "Magnet link find $magnet \n web_site_link_id : ${web_site_link_id} \n title  : ${title}"
 
+	echo "${title}, ${download_dir}, $magnet" >> hisotry.ini
+
+	
 	case "${user_input}" in
 		d)
 			download_torrent
