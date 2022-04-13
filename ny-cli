@@ -7,6 +7,7 @@ old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
 logo="${HOME}/.cache/ny-cli/logo.png"
 download_dir="${HOME}/Downloads/"
+logFile="history.ini"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 export LC_ALL=en_US.utf8  
 
@@ -187,6 +188,10 @@ create_cache_folder() {
 		welcome_msg
 		curl --silent -o logo.png "https://raw.githubusercontent.com/meteor314/ny-cli/master/src/ny-cli.png"
 	fi
+	#if history is empty or doesnot exizt logo if not exist
+	if [[ ! -f "${logFile}" ]];then
+		touch "${logFile}"
+	fi
 
 }
 
@@ -265,7 +270,6 @@ download_torrent() {
 	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"
 	user_download_dir_folder="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
 
-
 	if [[ "${user_download_dir_folder}" == y ]]; then
 		prompt   "Specify a folder:"
 		user_download_dir_folder="$(printf "%s" "${reply}")"
@@ -278,7 +282,7 @@ download_torrent() {
 		fi
 	fi
 	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
-	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit -- --fs   # to do fix bugs, fs => fullscreen
+	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit    # to do fix bugs, fs => fullscreen
 	detect_os
 	
 
@@ -288,6 +292,31 @@ watch_torrent() {
 	stream  "$magnet" --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
 }
 
+download_from_history() {
+
+	test=$(cat  $logFile  | fzf) 
+	if [[ -z $test ]];then
+		print_red "History is empty"
+		print_white "Exiting ..."
+		sleep 1
+		die
+	fi
+	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/ //g')   
+	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
+
+
+	echo "Dwonload dir is:$download_dir"
+	echo "Magnet is : $magnet"		
+	if [[ ! -d $download_dir ]]; then
+		print_red "Error occured,folder:${download_dir} not found, error 404 :\ "
+		die
+	fi
+	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
+	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit   # to do fix bugs, fs => fullscreen
+	detect_os	
+
+
+}
 search_torrent () {
 	if [[ -z "${torrent_title_input}" ]];then
 		prompt "Search torrent : "
@@ -337,7 +366,7 @@ search_torrent () {
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
 	print_green  "Magnet link find $magnet \n web_site_link_id : ${web_site_link_id} \n title  : ${title}"
 
-	echo "${title}, ${download_dir}, $magnet" >> hisotry.ini
+	echo "${title}, ${download_dir}, $magnet" >> $logFile
 
 	
 	case "${user_input}" in
@@ -349,6 +378,7 @@ search_torrent () {
 			watch_torrent
 			return 1
 			;;
+	
 	esac
 
 
@@ -361,6 +391,7 @@ input_controls() {
 
 	print_list_item "w" "Watch films, animes"
 	print_list_item "d" "Download films, animes (recommanded)"
+	print_list_item "H" "Continue download torrent"
 	print_list_item "q" "Exit"
 
 	printf "\n"
@@ -370,6 +401,10 @@ input_controls() {
 	case "${user_input}" in
 		w|watch|d|download)
 			search_torrent
+			return 1
+			;;
+		h|history)
+			download_from_history
 			return 1
 			;;
 		q|quit|exit)
@@ -384,6 +419,7 @@ input_controls() {
 
 check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "stream"
 create_cache_folder
+
 
 
 main() {
