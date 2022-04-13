@@ -366,7 +366,11 @@ search_torrent () {
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
 	print_green  "Magnet link find $magnet \n web_site_link_id : ${web_site_link_id} \n title  : ${title}"
 
-	echo "${title}, ${download_dir}, $magnet" >> $logFile
+	if ! grep  -q $magnet $logFile;	then
+		echo "${title}, ${download_dir}, $magnet" >> $logFile
+	fi
+echo
+	
 
 	
 	case "${user_input}" in
@@ -391,7 +395,7 @@ input_controls() {
 
 	print_list_item "w" "Watch films, animes"
 	print_list_item "d" "Download films, animes (recommanded)"
-	print_list_item "H" "Continue download torrent"
+	print_list_item "h" "Continue unfinshed download torrent"
 	print_list_item "q" "Exit"
 
 	printf "\n"
