@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="1.8.1"
+version="1.8.2"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -283,7 +283,7 @@ download_torrent() {
 	fi
 
 	if ! grep  -q $magnet $logFile;	then
-		echo "${title}, ${download_dir}, $magnet" >> $logFile
+		echo "${title},${download_dir},$magnet" >> $logFile
 	fi
 	
 	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
@@ -306,14 +306,14 @@ download_from_history() {
 		sleep 1
 		die
 	fi
-	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/ //g')   
+	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
 	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
 
 
 	echo "Dwonload dir is:$download_dir"
 	echo "Magnet is : $magnet"		
 	if [[ ! -d $download_dir ]]; then
-		print_red "Error occured,folder:${download_dir} not found, error 404 :\ "
+		print_red "Error occured,folder:$download_dir not found, error 404 :\ "
 		die
 	fi
 	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
