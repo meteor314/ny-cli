@@ -145,6 +145,8 @@ detect_os() {
 		printf 'darwin\n'
 		;;
 	msys*|cygwin*|nt|win*|mingw*)
+		$(echo ${torrent_title_input} | sed 's/ /+/g')
+		download_dir=$(echo ${download_dir} | sed 's/\\\\/\\/g') #replace C:\\user by C:\user else explorer can not open file manager.
 		print_blue 'Window detected ^-^,  opening default file manager \n'
 		start "${download_dir}"
 		;;
@@ -306,7 +308,7 @@ download_from_history() {
 		sleep 1
 		die
 	fi
-	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
+	download_dir_for_windows=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
 	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
 
 
