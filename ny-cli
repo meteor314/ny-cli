@@ -145,7 +145,8 @@ detect_os() {
 		printf 'darwin\n'
 		;;
 	msys*|cygwin*|nt|win*|mingw*)
-		download_dir=$(echo "$download_dir" | sed 's/\\\\/\\/g') ) #replace C:\\user by C:\user else explorer can not open file manager.
+		$(echo ${torrent_title_input} | sed 's/ /+/g')
+		download_dir=$(echo ${download_dir} | sed 's/\\\\/\\/g') #replace C:\\user by C:\user else explorer can not open file manager.
 		print_blue 'Window detected ^-^,  opening default file manager \n'
 		start "${download_dir}"
 		;;

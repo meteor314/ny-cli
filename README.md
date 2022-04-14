@@ -140,14 +140,14 @@ Options passed after -- will be passed to your player
 ## TO DO / WISH LIST
 
 - [✓] Compatibilty with windows.
-- [] Download torrent in a specific folder (with ny-cli -d)
+- [✓] Download torrent in a specific folder (with ny-cli -d)
 - [] Send notification after download ( notify-send(?) ) for W10, Mac & Linux.
 - [] Compatibility with mac os.
 - [] Fix bugs with git bash in W10
-- [] Make a history of all torrent in ./.cache/history.ini
+- [✓] Make a history of all torrent in ./.cache/history.ini
 - [] Detect files formats, for example, if it is a zip file or .exe just download it, don't try to open with mpv
 - [] add vlc player.
-- [] Create a custom node webserver based on webtorrent for a better compatibility.
+- [✓] Create a custom node webserver based on webtorrent for a better compatibility.
 
 ## License
 This project is licensed under [Apache](https://raw.githubusercontent.com/meteor314/ny-cli/master/LICENSE).
