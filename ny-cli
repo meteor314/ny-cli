@@ -308,7 +308,7 @@ download_from_history() {
 		sleep 1
 		die
 	fi
-	download_dir_for_windows=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
+	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
 	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
 
 
