@@ -308,7 +308,7 @@ watch_torrent() {
 download_from_history() {
 
 	test=$(cat  $logFile  | fzf) 
-	if [[ ! -z $test ]]; then
+	if [[  -z $test ]]; then
 		print_red "No torrent selected ..."
 		print_white "Exiting ..."
 		sleep 1
