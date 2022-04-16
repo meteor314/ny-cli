@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="1.8.2"
+version="1.8.3"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -21,7 +21,7 @@ Black='\033[0;30m'        # Black
 Red='\033[0;31m'          # Red
 Green='\033[0;32m'        # Green
 Yellow='\033[0;33m'       # Yellow
-Blue='\033[0;34m'         # Blue
+Blue='\033[0;36m'         # Blue suck
 Purple='\033[0;35m'       # Purple
 Cyan='\033[0;36m'         # Cyan
 White='\033[0;37m'        # White
@@ -49,7 +49,11 @@ print_white() { # Print green text
 
 
 print_purple() { # Print green text
-	echo -e "${Purple}}" "${*}"
+	echo -e "${Purple}" "${*}"
+}
+
+print_cyan() { # Print green text
+	echo -e "${Cyan}" "${*}"
 }
 
 
@@ -83,7 +87,9 @@ welcome_msg() {
 	while IFS= read -r line; do
 		printf "%s\n" "${line}"
 	done <<-EOF
-	Please try stream-cli -h for help and another options.
+	ny-cli ${version}
+	It seems like you are using ny-cli for the first time.
+	Please try ny-cli -h for help and another options.
 	EOF
 }
 
@@ -284,17 +290,17 @@ download_torrent() {
 		fi
 	fi
 
+	title=$(echo "$title" | sed -E 's/^(.*?)title=\"//g') # remove all patern before title=", format title
+	#verify if title alreday exist in the db :)
 	if ! grep  -q $magnet $logFile;	then
 		echo "${title},${download_dir},$magnet" >> $logFile
 	fi
 	
-	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
+	print_cyan "Content of this torrent, all files will download in $download_dir, press enter to continue"
 	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit    # to do fix bugs, fs => fullscreen
 	detect_os
-	
-
-
 }
+
 watch_torrent() {
 	stream  "$magnet" --list --mpv --subtitles --remove --not-on-top #   -r, --remove       remove files on exit
 }
@@ -302,8 +308,8 @@ watch_torrent() {
 download_from_history() {
 
 	test=$(cat  $logFile  | fzf) 
-	if [[ -z $test ]];then
-		print_red "History is empty"
+	if [[ ! -z $test ]]; then
+		print_red "No torrent selected ..."
 		print_white "Exiting ..."
 		sleep 1
 		die
@@ -322,6 +328,25 @@ download_from_history() {
 	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit   # to do fix bugs, fs => fullscreen
 	detect_os	
 
+
+}
+
+##################
+# export history #
+##################
+
+#export histroy and rename as csv file
+
+export_history() {
+	if [[ ! -f ${cache_dir}/$logFile ]];then
+		print_red "History is empty"
+		print_white "Exiting ..."
+		sleep 1
+		die
+	fi
+	print_purple "Exporting database  : ${cache_dir}/$logFile to ${HOME}/Desktop/ny-cli-history-torrent.csv"
+	cp ${cache_dir}/$logFile ${HOME}/Desktop/ny-cli-history-torrent.csv
+	die
 
 }
 search_torrent () {
@@ -396,6 +421,7 @@ input_controls() {
 	print_list_item "w" "Watch films, animes"
 	print_list_item "d" "Download films, animes (recommanded)"
 	print_list_item "h" "Continue unfinshed download torrent"
+	print_list_item "e" "Export history as csv file"
 	print_list_item "q" "Exit"
 
 	printf "\n"
@@ -411,6 +437,10 @@ input_controls() {
 			download_from_history
 			return 1
 			;;
+		e|export)
+			export_history
+			exit 0
+			;; 
 		q|quit|exit)
 			clear
 			exit 0
