@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="1.8.3"
+version="2.0.0"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -54,6 +54,10 @@ print_purple() { # Print green text
 
 print_cyan() { # Print green text
 	echo -e "${Cyan}" "${*}"
+}
+print_yellow () { # Print yellow text
+	echo -e "${Yellow}" "${*}"
+
 }
 
 
@@ -290,7 +294,6 @@ download_torrent() {
 		fi
 	fi
 
-	title=$(echo "$title" | sed -E 's/^(.*?)title=\"//g') # remove all patern before title=", format title
 	#verify if title alreday exist in the db :)
 	if ! grep  -q $magnet $logFile;	then
 		echo "${title},${download_dir},$magnet" >> $logFile
@@ -349,25 +352,81 @@ export_history() {
 	die
 
 }
-search_torrent () {
-	if [[ -z "${torrent_title_input}" ]];then
-		prompt "Search torrent : "
-		torrent_title_input="${reply}"
-		torrent_title_input=$(echo ${torrent_title_input} | sed 's/ /+/g') #replace space by +  for example detah note => death+note
-	fi
+#############
+# find link #
+#############
 
-
-
+search_torrent_from_nyaasi() { 
+	torrent_title_input=$(echo ${torrent_title_input} | sed 's/ /+/g') #replace space by +  for example detah note => death+note
+	
 	print_green "Searching for '${torrent_title_input}'..."
 	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
 
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf
+	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf	
+	echo $title > tmp.html
+	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')
+	echo $web_site_link_id
+	echo $web_site_link_id > tmp.html	
+	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
+	curl --silent --globoff ${web_site_link_id} > tmp.html	
+}
+# search from piratebay
+search_torrent_from_piratebay() {
+	torrent_title_input=${torrent_title_input// /%20} #replace space by %20  for example detah note => death%20note
+	
+
+	curl --silent -o tmp.html "https://thepiratebay.party/search/${torrent_title_input}/1/99/0"
+	title=$(cat tmp.html | grep -Eo "torrent\/[0-9]{6,8}\/[^\"]*" | fzf)
+
+	title="https://thepiratebay.party/${title}"
+
+	print_yellow "Torrent find ${title}"
+
+	curl --silent --globoff "$title" > tmp.html 
+	#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
+}
+search_from() {
+	print_list_item "1" "Search from nyaa.si (recommanded for animes)"
+	print_list_item "2" "Search from piratebay (recommanded for films, series or video games)"
+
+	if [[ -z "${web_site}" ]];then
+		prompt "Please chose a nubmer :  "
+		web_site="${reply}"
+	fi
+	[ "$web_site" -eq "$web_site" ] 2>/dev/null || die 'Invalid number :(, exiting'
+	
+
+	return $web_site
 
 
-	if [[ -z "$title" ]]; then # if torrent is unavailable
+}
+################
+# find torrent #
+################
+search_torrent () {
+
+	search_from
+
+	if [[ -z "${torrent_title_input}" ]];then
+		prompt "Search torrent : "
+		torrent_title_input="${reply}"
+	fi
+
+	if [[ $web_site == 1 ]]; then
+		print_blue "You chose https://nyaa.si, searching animes :"
+		search_torrent_from_nyaasi
+	else 
+		print_cyan "You chose piratebay, searching films, seres or download video games"
+		search_torrent_from_piratebay
+	fi
+	
+	# find magnet link with regex
+	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
+
+	if [[ -z "$magnet" ]]; then # if torrent is unavailable
 		print_red "An error occured, could not find this link, please chose another torrent :-("
 		print_purple "the torrents are chosen according to their popularity/number of seeders. \n Please choose among the first torrents proposed for a better experience."		
 
@@ -382,20 +441,6 @@ search_torrent () {
 		clear
 		main
 	fi
-	echo $title > tmp.html
-	
-
-
-
-	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')
-	echo $web_site_link_id
-	echo $web_site_link_id > tmp.html
-
-	
-	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
-	curl --globoff ${web_site_link_id} > tmp.html
-
-	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*") 
 	print_green  "Magnet link find $magnet \n web_site_link_id : ${web_site_link_id} \n title  : ${title}"
 
 	case "${user_input}" in
