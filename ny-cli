@@ -111,7 +111,7 @@ check_dependencies () {
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
 			if [ "$dep" = "stream" ]; then
-				error "Program \"$dep\" not found. Please install it with this command \"npm install @meteor314/stream\""
+				error "Program \"$dep\" not found. Please install it with this command \"npm install @meteor314/stream -g\""
 			else 
 				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or type apt-get install $dep"
 			fi
@@ -451,7 +451,7 @@ input_controls() {
 	input_controls
 }
 
-check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv"  "npm"  "stream"
+check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "stream"
 create_cache_folder
 
 
