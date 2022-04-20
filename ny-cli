@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="2.1.0"
+version="2.1.1"
 
 #Dependencies
 old_ifs="${IFS}"
@@ -279,12 +279,14 @@ done
 
 download_torrent() {
 
-	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"
+	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"	
 	user_download_dir_folder="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
 
+
 	if [[ "${user_download_dir_folder}" == y ]]; then
-		prompt   "Specify a folder:"
+		prompt   "Specify a folder or drag and drop folder here :"
 		user_download_dir_folder="$(printf "%s" "${reply}")"
+		user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/\"//g" | sed "s/'//g") #remove ' and "		
 		if [[ ! -d ${user_download_dir_folder} ]]; then
 			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
 			prompt "Press enter to continue:"
@@ -296,6 +298,7 @@ download_torrent() {
 
 	#verify if title alreday exist in the db :)
 	if ! grep  -q $magnet $logFile;	then
+		title=$(echo ${title} |  sed -E 's/^(.*?)\/[0-9\/]{6,10}//g'  | sed -E 's/^(.*?)title=\"//g') #remove link tags from title
 		echo -e "${title},${download_dir},${magnet}\n$(cat $logFile)" > ${logFile} #append at the beginning.
 	fi
 	
@@ -360,7 +363,7 @@ search_torrent_from_nyaasi() {
 	torrent_title_input=$(echo ${torrent_title_input} | sed 's/ /+/g') #replace space by +  for example detah note => death+note
 	
 	print_green "Searching for '${torrent_title_input}'..."
-	curl --silent --compressed "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" > tmp.html 
+	curl --silent --compressed -o tmp.html   "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc"  
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
 
@@ -371,31 +374,30 @@ search_torrent_from_nyaasi() {
 	echo $web_site_link_id
 	echo $web_site_link_id > tmp.html	
 	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
-	curl --silent --globoff ${web_site_link_id} > tmp.html	
+	curl --silent --globoff ${web_site_link_id}   > tmp.html	
 }
 # search from piratebay
 search_torrent_from_piratebay() {
 	torrent_title_input=${torrent_title_input// /%20} #replace space by %20  for example detah note => death%20note
 	
 
-	curl --silent -o tmp.html "https://thepiratebay.party/search/${torrent_title_input}/1/99/0"
+	curl --silent -o tmp.html "https://thepiratebay.party/search/${torrent_title_input}/1/99/0"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' 
 	title=$(cat tmp.html | grep -Eo "torrent\/[0-9]{6,8}\/[^\"]*" | fzf)
 
 	title="https://thepiratebay.party/${title}"
 
 	print_yellow "Torrent find ${title}"
 
-	curl --silent --globoff "$title" > tmp.html 
+	curl --silent --globoff "$title"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' > tmp.html 
 	#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
 }
 search_from() {
 	print_list_item "1" "Search from nyaa.si (recommanded for animes)"
 	print_list_item "2" "Search from piratebay (recommanded for films, series or video games)"
 
-	if [[ -z "${web_site}" ]];then
-		prompt "Please chose a nubmer (or press enter to continue, by default it's piratebay):  "
-		web_site="${reply}"
-	fi
+	prompt "Please chose a nubmer (or press enter to continue, by default it's piratebay):  "
+	web_site="${reply}"
+	
 	[[ $web_site ]] && [ $web_site -eq $web_site 2>/dev/null ] ||  web_site=2 # if input is not a number, set default value to  piratebay
 	return $web_site
 
@@ -405,21 +407,16 @@ search_from() {
 ################
 search_torrent () {
 
-	search_from
+     # if variable is empty, ask user to input a torrent web site
+    [ -z "$web_site" ] && search_from
 	
 	if [[ -z "${torrent_title_input}" ]];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
 	fi
 
-	if [[ $web_site -eq 1 ]]; then
-		search_torrent_from_nyaasi
-	else
-		search_torrent_from_piratebay
-	fi
-
-
-	
+    [[ "$web_site" -eq 1 ]] && search_torrent_from_nyaasi || search_torrent_from_piratebay
+   	
 	# find only first orrcurence of magnet link with regex
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -1) # match only first occurence
 
