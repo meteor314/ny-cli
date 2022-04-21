@@ -1,7 +1,6 @@
 #!/bin/bash
 #Version 
 version="2.1.1"
-
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
@@ -10,9 +9,6 @@ download_dir="${HOME}/Downloads/"
 logFile="history.ini"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 export LC_ALL=en_US.utf8  
-
-
-
 #Out put text color
 #Reset
 Color_Off='\033[0m'       # Text Reset
@@ -25,8 +21,6 @@ Blue='\033[0;36m'         # Blue suck
 Purple='\033[0;35m'       # Purple
 Cyan='\033[0;36m'         # Cyan
 White='\033[0;37m'        # White
-
-
 #Colorsized text function
 
 print_green() { # Print green text
@@ -55,16 +49,15 @@ print_purple() { # Print green text
 print_cyan() { # Print green text
 	echo -e "${Cyan}" "${*}"
 }
+
 print_yellow () { # Print yellow text
 	echo -e "${Yellow}" "${*}"
 
 }
 
-
 print_list_item() { 
 	printf "${Yellow}%s${Color_Off} ${Color_Off}%s${Color_Off}\n" "[${1}]" "${2}"
 }
-
 
 ######################
 # Auxilary functions #
@@ -102,8 +95,6 @@ error () {
 	print_red "$*" >&2
 }
 
-
-
 die () {
 	error "$*"
 	exit 1
@@ -111,7 +102,6 @@ die () {
 
 check_dependencies () {
 	# checks if dependencies are present
-
 	for dep; do
 		if ! command -v "$dep" >/dev/null ; then
 			if [ "$dep" = "stream" ]; then
@@ -119,19 +109,16 @@ check_dependencies () {
 			else 
 				error "Program \"$dep\" not found. Please install it. \n Type \"scoop install $dep\" if you're using windows or type apt-get install $dep"
 			fi
-
 			print_white "Exiting..."
 			die			
 		fi
 	done
-
 }
 check_dependencies
 
 prompt() { 
 	# Print text in green (${1}) and blue (${2}) 
 	printf "${Yellow}%s${Color_Off} ${Blue}%s${Color_Off}" "${1}" "${2}"
-
 	# Prompt user and save user input to the variable 'reply'
 	read -r reply 
 }
@@ -140,11 +127,8 @@ prompt() {
 #detec user os 
 
 
-#detec user os 
-
 detect_os() {
 	UNAME=$( command -v uname)
-
 	case $( "${UNAME}" | tr '[:upper:]' '[:lower:]') in
 	linux*)
 		print_blue 'Linux detected ^-^,  opening default file manager \n'
@@ -166,23 +150,16 @@ detect_os() {
 ###################
 # Cache functions #
 ###################
-
-
 show_cache_size() {
-
 	cache_size="$(du -sh "${cache_dir}" | awk '{print $1}')"
-
 	print_green "Cache size: ${cache_size} (${cache_dir})"
 }
 
 clear_cache() {
 	show_cache_size
-
 	prompt "Proceed with clearing the cache?" "[Y/N]: "
-
 	# Convert user input to lowercase
 	user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
-
 	if [[ "${user_input}" == "y" ]]; then
 		rm -r "${cache_dir:?}/"
 		print_green "Cache successfully cleared"
@@ -204,7 +181,6 @@ create_cache_folder() {
 	if [[ ! -f "${logFile}" ]];then
 		touch "${logFile}"
 	fi
-
 }
 
 ################
@@ -215,17 +191,14 @@ show_version() {
 	print_green "Version: ${version}"
 }
 
-
 #################
 # Update Script #
 #################
 
 update_script() {
 	print_green "Fetching Github repository..."
-
 	# Get latest source code and compare it with this script
 	changes="$(curl --silent "${github_source}" | diff -u "${0}" -)"
-
 	if [[ -z "${changes}" ]]; then # If variable 'changes' is empty 
 		print_green "Script is up to date"
 	else
@@ -236,8 +209,6 @@ update_script() {
 		fi
 	fi
 }
-
-
 while [[ "${1}" ]]; do
 	case "${1}" in
 		-h|--help)
@@ -265,28 +236,21 @@ while [[ "${1}" ]]; do
 			exit 1
 			;;
 	esac
-
 	shift
 done
-
 
 #################
 # Main Function #
 #################
 # Call 'reset_ifs' function when exiting script
-
-
-
 download_torrent() {
-
 	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"	
 	user_download_dir_folder="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
-
 
 	if [[ "${user_download_dir_folder}" == y ]]; then
 		prompt   "Specify a folder or drag and drop folder here :"
 		user_download_dir_folder="$(printf "%s" "${reply}")"
-		user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/\"//g" | sed "s/'//g") #remove ' and "		
+		user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/[\"']//g" ) #remove ' and "		
 		if [[ ! -d ${user_download_dir_folder} ]]; then
 			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
 			prompt "Press enter to continue:"
@@ -295,13 +259,11 @@ download_torrent() {
 			download_dir=${user_download_dir_folder}
 		fi
 	fi
-
 	#verify if title alreday exist in the db :)
 	if ! grep  -q $magnet $logFile;	then
 		title=$(echo ${title} |  sed -E 's/^(.*?)\/[0-9\/]{6,10}//g'  | sed -E 's/^(.*?)title=\"//g') #remove link tags from title
 		echo -e "${title},${download_dir},${magnet}\n$(cat $logFile)" > ${logFile} #append at the beginning.
 	fi
-	
 	print_cyan "Content of this torrent, all files will download in $download_dir, press enter to continue"
 	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit    # to do fix bugs, fs => fullscreen
 	detect_os
@@ -312,7 +274,6 @@ watch_torrent() {
 }
 
 download_from_history() {
-
 	test=$(cat  $logFile  | fzf) 
 	if [[  -z $test ]]; then
 		print_red "No torrent selected ..."
@@ -322,8 +283,6 @@ download_from_history() {
 	fi
 	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
 	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
-
-
 	echo "Dwonload dir is:$download_dir"
 	echo "Magnet is : $magnet"		
 	if [[ ! -d $download_dir ]]; then
@@ -333,16 +292,11 @@ download_from_history() {
 	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
 	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit   # to do fix bugs, fs => fullscreen
 	detect_os	
-
-
 }
-
 ##################
 # export history #
 ##################
-
 #export histroy and rename as csv file
-
 export_history() {
 	if [[ ! -f ${cache_dir}/$logFile ]];then
 		print_red "History is empty"
@@ -353,7 +307,6 @@ export_history() {
 	print_purple "Exporting database  : ${cache_dir}/$logFile to ${HOME}/Desktop/ny-cli-history-torrent.csv"
 	cp ${cache_dir}/$logFile ${HOME}/Desktop/ny-cli-history-torrent.csv
 	die
-
 }
 #############
 # find link #
@@ -361,12 +314,10 @@ export_history() {
 
 search_torrent_from_nyaasi() { 
 	torrent_title_input=$(echo ${torrent_title_input} | sed 's/ /+/g') #replace space by +  for example detah note => death+note
-	
 	print_green "Searching for '${torrent_title_input}'..."
 	curl --silent --compressed -o tmp.html   "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc"  
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
-
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
 	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf	
 	echo $title > tmp.html
@@ -379,54 +330,39 @@ search_torrent_from_nyaasi() {
 # search from piratebay
 search_torrent_from_piratebay() {
 	torrent_title_input=${torrent_title_input// /%20} #replace space by %20  for example detah note => death%20note
-	
-
 	curl --silent -o tmp.html "https://thepiratebay.party/search/${torrent_title_input}/1/99/0"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' 
 	title=$(cat tmp.html | grep -Eo "torrent\/[0-9]{6,8}\/[^\"]*" | fzf)
-
 	title="https://thepiratebay.party/${title}"
-
 	print_yellow "Torrent find ${title}"
-
 	curl --silent --globoff "$title"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' > tmp.html 
 	#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
 }
 search_from() {
 	print_list_item "1" "Search from nyaa.si (recommanded for animes)"
 	print_list_item "2" "Search from piratebay (recommanded for films, series or video games)"
-
 	prompt "Please chose a nubmer (or press enter to continue, by default it's piratebay):  "
 	web_site="${reply}"
-	
 	[[ $web_site ]] && [ $web_site -eq $web_site 2>/dev/null ] ||  web_site=2 # if input is not a number, set default value to  piratebay
 	return $web_site
-
 }
 ################
 # find torrent #
 ################
 search_torrent () {
-
      # if variable is empty, ask user to input a torrent web site
     [ -z "$web_site" ] && search_from
-	
 	if [[ -z "${torrent_title_input}" ]];then
 		prompt "Search torrent : "
 		torrent_title_input="${reply}"
 	fi
-
     [[ "$web_site" -eq 1 ]] && search_torrent_from_nyaasi || search_torrent_from_piratebay
-   	
 	# find only first orrcurence of magnet link with regex
 	magnet=$(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | head -1) # match only first occurence
-
 	if [[ -z "$magnet" ]]; then # if torrent is unavailable
 		print_red "An error occured, could not find this link, please chose another torrent :-("
 		print_purple "the torrents are chosen according to their popularity/number of seeders. \n Please choose among the first torrents proposed for a better experience."		
-
 		prompt  "Do you want to continue ?" "[Y/n]: "
 		user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
-
 		#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
 		if [[ "${user_input}" == "n" ]]; then
 			die
@@ -446,27 +382,18 @@ search_torrent () {
 			watch_torrent
 			return 1
 			;;
-	
 	esac
-
-
 }
 
-
-
-
 input_controls() {
-
 	print_list_item "w" "Watch films, animes"
 	print_list_item "d" "Download films, animes (recommanded)"
 	print_list_item "h" "Continue unfinshed download torrent"
 	print_list_item "e" "Export history as csv file"
 	print_list_item "q" "Exit"
-
 	printf "\n"
 	prompt "Enter input:"
 	user_input="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
-
 	case "${user_input}" in
 		w|watch|d|download)
 			search_torrent
@@ -485,20 +412,14 @@ input_controls() {
 			exit 0
 			;;
 	esac
-
 	clear
 	input_controls
 }
-
 check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "stream"
 create_cache_folder
-
-
 
 main() {
 	input_controls
 	search_torrent
 }
-
-
 main
