@@ -4,7 +4,7 @@
     "license": "Apache License 2.0",
     "homepage": "https://github.com/meteor314/ny-cli",
     "extract_dir": "$env:USERPROFILE/.cache",
-    "url": "https://github.com/meteor314/ani-cli/releases/download/v$versions/ny-cli",
+    "url": "https://github.com/meteor314/ny-cli/releases/download/2.1.1/ny-cli.zip",
     "depends": "fzf",
     "suggest": {
         "mpv": [
@@ -15,6 +15,6 @@
     "bin": "ny-cli",
     "checkver": "github",
     "autoupdate": {
-        "url": "https://github.com/pystardust/ani-cli/releases/download/v$version/ny-cli"
+        "url": "https://github.com/meteor314/ny-cli/releases/download/2.1.1/ny-cli.zip"
     }
 }
