@@ -244,21 +244,20 @@ done
 #################
 # Call 'reset_ifs' function when exiting script
 download_torrent() {
-	prompt "Do you want to download in a specfic folder ? (Default folder is ${download_dir}) [y/N]:"	
-	user_download_dir_folder="$(printf "%s" "${reply}" | tr "[:upper:]" "[:lower:]")"
-
-	if [[ "${user_download_dir_folder}" == y ]]; then
-		prompt   "Specify a folder or drag and drop folder here :"
-		user_download_dir_folder="$(printf "%s" "${reply}")"
-		user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/[\"']//g" ) #remove ' and "		
-		if [[ ! -d ${user_download_dir_folder} ]]; then
-			print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
-			prompt "Press enter to continue:"
-			
-		else 	
-			download_dir=${user_download_dir_folder}
-		fi
+	prompt "Do you want to download in a specfic folder ? 
+	Press enter to conitnue with default folder :${download_dir}. 
+	If you want to change this destination, 
+	you can drag and drop the folder to the terminal, or write the path manually here :"
+	user_download_dir_folder="$(printf "%s" "${reply}")"
+	user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/[\"']//g" ) #remove ' and "		
+	if [[ ! -d ${user_download_dir_folder} ]]; then
+		print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
+		prompt "Press enter to continue:"			
+	else 	
+		download_dir=${user_download_dir_folder}
 	fi
+	
+	print_red "Downloading torrent... in ${download_dir}"
 	#verify if title alreday exist in the db :)
 	if ! grep  -q $magnet $logFile;	then
 		title=$(echo ${title} |  sed -E 's/^(.*?)\/[0-9\/]{6,10}//g'  | sed -E 's/^(.*?)title=\"//g') #remove link tags from title
