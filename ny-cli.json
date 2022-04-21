@@ -1,6 +1,20 @@
 {
     "version": "2.1.1",
-    "url": "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli",
+    "description": "A cli to watch anime from nyaa.si and piratebay with torrent",
+    "license": "Apache License 2.0",
+    "homepage": "https://github.com/meteor314/ny-cli",
     "extract_dir": "$env:USERPROFILE/.cache",
-    "bin": "ny-cli"
+    "url": "https://github.com/meteor314/ani-cli/releases/download/v$versions/ny-cli",
+    "depends": "fzf",
+    "suggest": {
+        "mpv": [
+            "mpv",
+            "curl"
+        ]
+    },
+    "bin": "ny-cli",
+    "checkver": "github",
+    "autoupdate": {
+        "url": "https://github.com/pystardust/ani-cli/releases/download/v$version/ny-cli"
+    }
 }
