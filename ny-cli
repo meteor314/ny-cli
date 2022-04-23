@@ -299,7 +299,7 @@ download_from_history() {
 			download_dir=$(echo ${line_history} | awk -F, '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
 			# get the title
 			title=$(echo ${line_history} | awk -F, '{print $1}')
-			print_list_item "You chosse to download" "${title}"
+			print_list_item "You choose to download" "${title}"
 			# download torrent
 			download_torrent
 		else
@@ -336,22 +336,23 @@ search_torrent_from_nyaasi() {
 	curl --silent --compressed -o tmp.html   "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc"  
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
-	cat tmp.html  | grep -Eo "[0-9]{5,9}\" title=\"[^\"]*"  | head -n 7 > tmp.ini # Extract text before \" in a string using regex and store in tmp.ini
+	cat tmp.html  | grep -Eo "view/[0-9]{5,9}\" title=\"[^\"]*"  | head -n 7 > tmp.ini # Extract text before \" in a string using regex and store in tmp.ini
 
 	count_line=1;
+	print_purple "Search result :"
 	while IFS= read -r line || [ "$line" ];
-		do printf "%s\t"  $count_line; 
+		do printf "%s)\t"  $count_line; 
 			((count_line=count_line+1));  
-			printf "%s\n\n" "${line:15:70}"; 
+			printf "%s\n\n" "${line:20:70}"; 
 	done < tmp.ini 
 
-	prompt "Choose a line number from history :"
+	prompt "Choose a line number  :"
 	# verify if user input is a number
 	if [[ "${reply}" =~ ^[0-9]+$ ]]; then
 		# verify if user input is beetween 1 and the number of line in history.ini
 		if [[ "${reply}" -ge 0 && "${reply}" -le "${count_line}" ]]; then
 			web_site_link_id=$(sed -n "${reply}p" tmp.ini)
-			# find the id web_site_link_id with regex
+			# find the id web_site_link_id with sed
 			web_site_link_id=$(echo ${web_site_link_id} | sed -E 's/^.*view\/([0-9]{5,9})\" title=\"[^\"]*$/\1/g')
 			
 		else 
@@ -364,7 +365,7 @@ search_torrent_from_nyaasi() {
 	fi
 	
 	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
-	echo $web_site_link_id
+	print_blue "web site link id is : $web_site_link_id"
 	curl --silent --globoff ${web_site_link_id}   > tmp.html	
 }
 # search from piratebay
@@ -382,7 +383,7 @@ search_torrent_from_piratebay() {
 			printf "%s\n\n" "${line:8:70}"; 
 	done < tmp.ini 
 
-	prompt "Choose a line number from history :"
+	prompt "Choose a line number :"
 	# verify if user input is a number
 	if [[ "${reply}" =~ ^[0-9]+$ ]]; then
 		# verify if user input is beetween 1 and the number of line in history.ini
@@ -399,9 +400,9 @@ search_torrent_from_piratebay() {
 		die
 	fi
 
-	title="https://thepiratebay.party/torrent/${web_site_link_id}"
-	print_yellow "Torrent find ${title}"
-	curl --silent --globoff "$title"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' > tmp.html 
+	web_site_link_id="https://thepiratebay.party/torrent/${web_site_link_id}"
+	print_yellow "Torrent find ${web_site_link_id}"
+	curl --silent --globoff "$web_site_link_id"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' > tmp.html 
 	#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
 }
 search_from() {
