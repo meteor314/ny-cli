@@ -320,9 +320,7 @@ search_torrent_from_nyaasi() {
 	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
 	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf	
 	echo $title > tmp.html
-	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')
-	echo $web_site_link_id
-	echo $web_site_link_id > tmp.html	
+	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')	
 	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
 	curl --silent --globoff ${web_site_link_id}   > tmp.html	
 }
