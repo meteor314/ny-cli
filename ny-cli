@@ -1,6 +1,6 @@
 #!/bin/bash
 #Version 
-version="2.1.1"
+version="2.2.0"
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
@@ -123,9 +123,7 @@ prompt() {
 	read -r reply 
 }
 
-
 #detec user os 
-
 
 detect_os() {
 	UNAME=$( command -v uname)
@@ -248,13 +246,19 @@ download_torrent() {
 	Press enter to conitnue with default folder :${download_dir}. 
 	If you want to change this destination, 
 	you can drag and drop the folder to the terminal, or write the path manually here :"
-	user_download_dir_folder="$(printf "%s" "${reply}")"
-	user_download_dir_folder=$(echo ${user_download_dir_folder} | sed "s/[\"']//g" ) #remove ' and "		
-	if [[ ! -d ${user_download_dir_folder} ]]; then
-		print_red "Error can not found : ${user_download_dir_folder} folder. Torrent will be download in : ${download_dir}). "
+	# verify is reply is empty or not
+	if [[ -z "${reply}" ]]; then
+		# if reply is empty, use default download_dir
+		download_dir=${download_dir}  | sed "s/[\"']//g"  #remove ' and "
+	else
+		# if reply is not empty, use reply as download_dir
+		download_dir="${reply}"
+	fi		
+	if [[ ! -d ${download_dir} ]]; then
+		print_red "Error can not found : ${download_dir} folder. Torrent will be download in : ${HOME}/download). "
 		prompt "Press enter to continue:"			
 	else 	
-		download_dir=${user_download_dir_folder}
+		download_dir="${HOME}/download"
 	fi
 	
 	print_red "Downloading torrent... in ${download_dir}"
@@ -273,24 +277,39 @@ watch_torrent() {
 }
 
 download_from_history() {
-	test=$(cat  $logFile  | fzf) 
-	if [[  -z $test ]]; then
-		print_red "No torrent selected ..."
-		print_white "Exiting ..."
-		sleep 1
+	# prompt user to choose a torrent from history
+
+	count_line=1;
+	while IFS= read -r line || [ "$line" ];
+		do printf "%s\t"  $count_line; 
+			((count_line=count_line+1));  
+			printf "%s\n\n" "${line:0:50}"; 
+	done < history.ini 
+	
+	prompt "Choose a line number from history :"
+	# verify if user input is a number
+	if [[ "${reply}" =~ ^[0-9]+$ ]]; then
+		# verify if user input is beetween 1 and the number of line in history.ini
+		if [[ "${reply}" -ge 0 && "${reply}" -le "${count_line}" ]]; then
+			# get the line of history.ini
+			line_history=$(sed -n "${reply}p" history.ini)
+			# get the magnet link
+			magnet=$(echo ${line_history} | awk -F, '{print $3}')
+			# get the download dir
+			download_dir=$(echo ${line_history} | awk -F, '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
+			# get the title
+			title=$(echo ${line_history} | awk -F, '{print $1}')
+			print_list_item "You chosse to download" "${title}"
+			# download torrent
+			download_torrent
+		else
+			print_red "Error: ${reply} is not a valid number"
+			die
+		fi
+	else
+		print_red "Error: invalid input"
 		die
 	fi
-	download_dir=$(echo "$test" | awk -F ',' '{print $2}' | sed 's/\\/\\\\/g')   #replace \ => \\ for windows
-	magnet=$(echo "$test" | awk -F ',' '{print $3}' | sed 's/ //g') #trim
-	echo "Dwonload dir is:$download_dir"
-	echo "Magnet is : $magnet"		
-	if [[ ! -d $download_dir ]]; then
-		print_red "Error occured,folder:$download_dir not found, error 404 :\ "
-		die
-	fi
-	print_purple "Content of this torrent, all files will download in $download_dir, press enter to continue"
-	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit   # to do fix bugs, fs => fullscreen
-	detect_os	
 }
 ##################
 # export history #
@@ -317,21 +336,70 @@ search_torrent_from_nyaasi() {
 	curl --silent --compressed -o tmp.html   "https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc"  
 	echo "Link find : https://nyaa.si/?f=0&c=0_0&q=${torrent_title_input}&s=seeders&o=desc" 
 	
-	#regex= $(cat tmp.html | grep -Eo "magnet:(.)[a-zA-Z0-9./?=_%:-]*" | fzf) 
-	title=$( cat tmp.html | grep -Eo "view\/[0-9]{5,9}\" title=\"[^\"]*" | fzf  ) 	 # Extract text before \" in a string using regex and user can select the content with fzf	
-	echo $title > tmp.html
-	web_site_link_id=$(cat tmp.html | grep -Eo '[0-9]{5,9}')
-	echo $web_site_link_id
-	echo $web_site_link_id > tmp.html	
+	cat tmp.html  | grep -Eo "[0-9]{5,9}\" title=\"[^\"]*"  | head -n 7 > tmp.ini # Extract text before \" in a string using regex and store in tmp.ini
+
+	count_line=1;
+	while IFS= read -r line || [ "$line" ];
+		do printf "%s\t"  $count_line; 
+			((count_line=count_line+1));  
+			printf "%s\n\n" "${line:15:70}"; 
+	done < tmp.ini 
+
+	prompt "Choose a line number from history :"
+	# verify if user input is a number
+	if [[ "${reply}" =~ ^[0-9]+$ ]]; then
+		# verify if user input is beetween 1 and the number of line in history.ini
+		if [[ "${reply}" -ge 0 && "${reply}" -le "${count_line}" ]]; then
+			web_site_link_id=$(sed -n "${reply}p" tmp.ini)
+			# find the id web_site_link_id with regex
+			web_site_link_id=$(echo ${web_site_link_id} | sed -E 's/^.*view\/([0-9]{5,9})\" title=\"[^\"]*$/\1/g')
+			
+		else 
+			print_red "Error: ${reply} is not a valid number"
+			die
+		fi
+	else
+		print_red "Error: invalid input"
+		die
+	fi
+	
 	web_site_link_id="https://nyaa.si/view/${web_site_link_id}" # >tmp.html
+	echo $web_site_link_id
 	curl --silent --globoff ${web_site_link_id}   > tmp.html	
 }
 # search from piratebay
 search_torrent_from_piratebay() {
 	torrent_title_input=${torrent_title_input// /%20} #replace space by %20  for example detah note => death%20note
 	curl --silent -o tmp.html "https://thepiratebay.party/search/${torrent_title_input}/1/99/0"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' 
-	title=$(cat tmp.html | grep -Eo "torrent\/[0-9]{6,8}\/[^\"]*" | fzf)
-	title="https://thepiratebay.party/${title}"
+	echo "Link find : https://thepiratebay.party/search/${torrent_title_input}/1/99/0"
+
+	cat tmp.html | grep -Eo "[0-9]{6,8}\/[^\"]*" | head -n 7  > tmp.ini # Extract text before " in a string using regex and store in tmp.ini
+
+	count_line=1;
+	while IFS= read -r line || [ "$line" ];
+		do printf "%s\t"  $count_line; 
+			((count_line=count_line+1));  
+			printf "%s\n\n" "${line:8:70}"; 
+	done < tmp.ini 
+
+	prompt "Choose a line number from history :"
+	# verify if user input is a number
+	if [[ "${reply}" =~ ^[0-9]+$ ]]; then
+		# verify if user input is beetween 1 and the number of line in history.ini
+		if [[ "${reply}" -ge 0 && "${reply}" -le "${count_line}" ]]; then
+			web_site_link_id=$(sed -n "${reply}p" tmp.ini)
+			echo $web_site_link_id
+			
+		else 
+			print_red "Error: ${reply} is not a valid number"
+			die
+		fi
+	else
+		print_red "Error: invalid input"
+		die
+	fi
+
+	title="https://thepiratebay.party/torrent/${web_site_link_id}"
 	print_yellow "Torrent find ${title}"
 	curl --silent --globoff "$title"  -X POST -H 'User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:99.0) Gecko/20100101 Firefox/99.0' > tmp.html 
 	#exemple of url :magnet:?xt=urn:btih:554491C7E605D11BF30324D5E4CA4509D0662A9E
@@ -414,7 +482,7 @@ input_controls() {
 	clear
 	input_controls
 }
-check_dependencies "curl" "fzf" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "stream"
+check_dependencies "curl" "patch" "mkdir" "cat" "sed" "grep" "git" "mpv" "stream"
 create_cache_folder
 
 main() {
