@@ -59,7 +59,7 @@ echo 'am start --user 0 -a android.intent.action.VIEW -d "$2" -n is.xyz.mpv/.MPV
 chmod +x $PREFIX/bin/mpv
 ```
 
-<h2 style='color:purple' > Don't forget to give termux file manager access. </h2>
+<h3 style='color:purple' > Don't forget to give termux file manager access. </h3>
 
 ## Windows
 You need scoop to install on your.<b><i> </i> </b>you can find a complete documentation [here.](https://scoop.sh/)
