@@ -1,11 +1,12 @@
 #!/bin/bash
 #Version 
-version="2.1.1"
+version="2.1.2"
 #Dependencies
 old_ifs="${IFS}"
 cache_dir="${HOME}/.cache/ny-cli"
 logo="${HOME}/.cache/ny-cli/logo.png"
-download_dir="${HOME}/Downloads/"
+# verify if os type is android or linux
+[[ "$OSTYPE" == "linux-android" ]] && download_dir="/storage/emulated/0/Download" || download_dir="${HOME}/Downloads/"
 logFile="history.ini"
 github_source="https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli"
 export LC_ALL=en_US.utf8  
@@ -264,8 +265,8 @@ download_torrent() {
 		echo -e "${title},${download_dir},${magnet}\n$(cat $logFile)" > ${logFile} #append at the beginning.
 	fi
 	print_cyan "Content of this torrent, all files will download in $download_dir, press enter to continue"
-	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --exit    # to do fix bugs, fs => fullscreen
-	detect_os
+	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --on-downloaded "detect_os" --exit    # to do fix bugs, fs => fullscreen
+	#detect_os
 }
 
 watch_torrent() {

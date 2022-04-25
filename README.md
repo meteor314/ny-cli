@@ -36,6 +36,31 @@ cURL **ny-cli** to your **$PATH** and give execute permissions.
 sudo curl -sL "https://raw.githubusercontent.com/meteor314/ny-cli/master/ny-cli" -o /usr/local/bin/ny-cli
 sudo chmod +x /usr/local/bin/ny-cli && sudo npm install @meteor314/stream -g
 ```
+## Android 
+
+Install [termux](https://termux.com/) and Install [mpv-android](https://github.com/mpv-android/mpv-android/releases)
+And you can paste this command on termianal,Before continue, make sure that termux is up to date with this command 
+
+
+```sh
+pkg upgrade && pkg update
+``` 
+And just copy and paste this command:
+
+```sh
+pkg update
+pkg i nodejs
+npm i @meteor314/stream -g
+pkg i fzf
+pkg i git
+git clone https://github.com/meteor314/ny-cli && cd ny-cli
+cp stream-cli $PREFIX/bin/ny-cli
+echo 'am start --user 0 -a android.intent.action.VIEW -d "$2" -n is.xyz.mpv/.MPVActivity' > $PREFIX/bin/mpv
+chmod +x $PREFIX/bin/mpv
+```
+
+<h2 style='color:purple' > Don't forget to give termux file manager access. </h2>
+
 ## Windows
 You need scoop to install on your.<b><i> </i> </b>you can find a complete documentation [here.](https://scoop.sh/)
 The easiest way to install it is to open powershell (as a simple user) paste this.
