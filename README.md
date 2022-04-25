@@ -54,7 +54,7 @@ npm i @meteor314/stream -g
 pkg i fzf
 pkg i git
 git clone https://github.com/meteor314/ny-cli && cd ny-cli
-cp stream-cli $PREFIX/bin/ny-cli
+cp ny-cli $PREFIX/bin/ny-cli
 echo 'am start --user 0 -a android.intent.action.VIEW -d "$2" -n is.xyz.mpv/.MPVActivity' > $PREFIX/bin/mpv
 chmod +x $PREFIX/bin/mpv
 ```
