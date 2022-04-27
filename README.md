@@ -39,27 +39,39 @@ sudo chmod +x /usr/local/bin/ny-cli && sudo npm install @meteor314/stream -g
 ## Android 
 
 Install [termux](https://termux.com/) and Install [mpv-android](https://github.com/mpv-android/mpv-android/releases)
-And you can paste this command on termianal,Before continue, make sure that termux is up to date with this command 
+And you can paste this command on termianal,Before continue, make sure that termux is up to date with this command. Termux installation via play store does not work, because the software no longer receives updates in this platform.
+
+
+ DON'T FORGOT TO GIVE TERMUX FILE MANAGE ACCESS.
 
 
 ```sh
 pkg upgrade && pkg update
 ``` 
-And just copy and paste this command:
+And just copy and paste theses commands:
 
 ```sh
-pkg update
-pkg i nodejs
-npm i @meteor314/stream -g
-pkg i fzf
+pkg i nodejs 
+```
+```sh
+npm i @meteor314/stream -g 
+```
+```sh
+pkg i fzf 
+```
+```sh
 pkg i git
+```
+```sh
 git clone https://github.com/meteor314/ny-cli && cd ny-cli
+```
+```sh
 cp ny-cli $PREFIX/bin/ny-cli
+```
+```sh
 echo 'am start --user 0 -a android.intent.action.VIEW -d "$2" -n is.xyz.mpv/.MPVActivity' > $PREFIX/bin/mpv
 chmod +x $PREFIX/bin/mpv
 ```
-
-<h3 style='color:purple' > Don't forget to give termux file manager access. </h3>
 
 ## Windows
 You need scoop to install on your.<b><i> </i> </b>you can find a complete documentation [here.](https://scoop.sh/)
@@ -107,60 +119,7 @@ ny-cli --update
  sudo rm -rf /usr/local/bin/ny-cli
 ```
 ## Issue <hr>
-If you are using it, for the first time, you can get this error, I don't know why, but just retry 2 3 times with diffrent link and it should work. 
-```sh
-meteor@meteor-VirtualBox:~/Desktop/vwt.cad-viewer$ ny-cli 
-Search torrent :  naruto
- Searching for 'naruto'...
-Link find : https://nyaa.si/?f=0&c=0_0&q=naruto&s=seeders&o=desc
-1509859
-  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
-                                 Dload  Upload   Total   Spent    Left  Speed
-100  5066    0  5066    0     0  22122      0 --:--:-- --:--:-- --:--:-- 22026
-Usage: stream magnet-link-or-torrent [options]
-
-Options:
-  -c, --connections  max connected peers                            [default: 100]
-  -p, --port         change the http port                           [default: 8888]
-  -i, --index        changed streamed file (index)                
-  -l, --list         list available files with corresponding index
-  -t, --subtitles    load subtitles file                          
-  -q, --quiet        be quiet                                     
-  -v, --vlc          autoplay in vlc*                             
-  -s, --airplay      autoplay via AirPlay                         
-  -m, --mplayer      autoplay in mplayer*                         
-  -g, --smplayer     autoplay in smplayer*                        
-  --mpchc            autoplay in MPC-HC player*                   
-  --potplayer        autoplay in Potplayer*                       
-  -k, --mpv          autoplay in mpv*                             
-  -o, --omx          autoplay in omx**                            
-  -w, --webplay      autoplay in webplay                          
-  -j, --jack         autoplay in omx** using the audio jack       
-  -f, --path         change buffer file path                      
-  -b, --blocklist    use the specified blocklist                  
-  -n, --no-quit      do not quit stream on vlc exit             
-  -a, --all          select all files in the torrent              
-  -r, --remove       remove files on exit                         
-  -h, --hostname     host name or IP to bind the server to        
-  -e, --peer         add peer by ip:port                          
-  -x, --peer-port    set peer listening port                      
-  -d, --not-on-top   do not float video on top                    
-  --on-downloaded    script to call when file is 100% downloaded  
-  --on-listening     script to call when server goes live         
-  --version          prints current version                       
-
-Options passed after -- will be passed to your player
-
-  "stream magnet-link --vlc -- --fullscreen" will pass --fullscreen to vlc
-
-* Autoplay can take several seconds to start since it needs to wait for the first piece
-** OMX player is the default Raspbian video player
-
-[a] Search another torrent
-[q] Exit
-
-
-```
+If it's not working for the first time, please restart terminal or maybe your system.
 
 ## TO DO / WISH LIST
 
