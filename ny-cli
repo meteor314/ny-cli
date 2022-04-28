@@ -266,7 +266,7 @@ download_torrent() {
 	fi
 	print_cyan "Content of this torrent, all files will download in $download_dir, press enter to continue"
 	stream   "$magnet" --path "${download_dir}"  -a --no-quit --list --on-downloaded "detect_os" --exit    # to do fix bugs, fs => fullscreen
-	#detect_os
+	detect_os
 }
 
 watch_torrent() {
