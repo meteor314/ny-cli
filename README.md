@@ -121,6 +121,23 @@ ny-cli --update
 ## Issue <hr>
 If it's not working for the first time, please restart terminal or maybe your system.
 
+Sometime you can get this type of error : 
+```sh
+stream: unable to open image 'magnet:?xt=urn:btih:fba17d3e02fe94df607b823afe822bd30efd203f': No such file or directory @ error/blob.c/OpenBlob/3533.
+stream: no decode delegate for this image format `' @ error/constitute.c/ReadImage/738.
+stream: unable to open image '--path': No such file or directory @ error/blob.c/OpenBlob/3533.
+stream: unable to open image '--path': No such file or directory @ error/blob.c/OpenBlob/3533.
+stream: no decode delegate for this image format `' @ error/constitute.c/ReadImage/738.
+stream: no decode delegate for this image format `' @ error/constitute.c/ReadImage/738.
+stream: unrecognized option `-a' @ error/stream.c/StreamImageCommand/306.
+```
+This error usually comes after an update. Just reinstall stream
+with this command in the terminal:
+```js
+  npm i @meteor314/stream -g
+  ```
+
+
 ## TO DO / WISH LIST
 
 - [✓] Compatibilty with windows.
